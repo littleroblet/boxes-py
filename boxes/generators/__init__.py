@@ -37,15 +37,15 @@ class UIGroup:
 
 
 ui_groups: list[UIGroup] = [
-    UIGroup("Box", "Boxes", image="UniversalBox"),
-    UIGroup("FlexBox", "Boxes with flex", image="RoundedBox"),
-    UIGroup("Tray", "Trays and Drawer Inserts", image="TypeTray"),
-    UIGroup("Shelf", "Shelves", image="DisplayShelf"),
-    UIGroup("WallMounted", image="WallTypeTray"),
-    UIGroup("Holes", "Hole patterns", image=""),
-    UIGroup("Part", "Parts and Samples", image="BurnTest"),
-    UIGroup("Misc", image="TrafficLight"),
-    UIGroup("Unstable", description="Generators are still untested or need manual adjustment to be useful."),
+    UIGroup("Box", "Boxes", image="UniversalBox", description="Standard boxes for a variety of uses."),
+    UIGroup("FlexBox", "Boxes with flex", image="RoundedBox", description="Boxes that include flexible parts."),
+    UIGroup("Tray", "Trays and Drawer Inserts", image="TypeTray", description="Trays designed to be used standalone or as inserts."),
+    UIGroup("Shelf", "Shelves", image="DisplayShelf", description="A variety of shelves for different uses."),
+    UIGroup("WallMounted", image="WallTypeTray", description="Wall mountable holders for tools and other items, with a variety of wall mounting options."),
+    UIGroup("Holes", "Hole patterns", image="SevenSegmentPattern", description="Hole Patterns to be used as part of a project."),
+    UIGroup("Part", "Parts and Samples", image="BurnTest", description="Individual Parts and Samples."),
+    UIGroup("Misc", image="TrafficLight", description="Boxes that do not fit into other categories."),
+    UIGroup("Unstable", image="Silverware", description="Generators are still untested or need manual adjustment to be useful."),
 ]
 
 
