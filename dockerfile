@@ -8,6 +8,10 @@ RUN python3 -m venv env
 # Install gunicorn and build tools (if needed)
 RUN /app/env/bin/pip install --no-cache-dir gunicorn
 
+# Install dependencies first (better build cache)
+COPY requirements.txt /app/requirements.txt
+RUN /app/env/bin/pip install --no-cache-dir -r requirements.txt
+
 # Copy your repo contents into the container
 COPY . /app
 
