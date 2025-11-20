@@ -225,6 +225,7 @@ textarea {
     margin : 5px;
     margin-top : 15px;
     font-weight: bold;
+    position: relative;
 }
 
 .gallery img {
@@ -253,4 +254,526 @@ textarea {
 .modeactive {
     background-color: #DFD8BA;
 
+}
+
+/* Button Styles */
+button.primary {
+    background-color: #ABC837;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button.primary:hover {
+    background-color: #89A02C;
+}
+
+button.secondary {
+    background-color: #FF6600;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button.secondary:hover {
+    background-color: #E65500;
+}
+
+button.tertiary {
+    background-color: #CCCCCC;
+    color: #333;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button.tertiary:hover {
+    background-color: #BBBBBB;
+}
+
+button.danger {
+    background-color: #d9534f;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button.danger:hover {
+    background-color: #c9302c;
+}
+
+/* Modal Dialog Styles - Reusable for all modals */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #FFF8EA;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    max-width: 400px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.modal-body {
+    margin-bottom: 20px;
+}
+
+.modal-body label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+.modal-body input[type="text"] {
+    width: calc(100% - 16px);
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.modal-footer {
+    text-align: right;
+    margin-top: 20px;
+}
+
+.modal-footer button {
+    margin-left: 10px;
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 20px;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: #000;
+}
+
+/* Notification-specific styles */
+
+.modal-content.notification-modal {
+    text-align: center;
+}
+
+.notification-icon {
+    font-size: 4em;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+.notification-icon.success {
+    color: #4CAF50;
+}
+
+.notification-icon.error {
+    color: #f44336;
+}
+
+.notification-icon.info {
+    color: #2196F3;
+}
+
+.notification-message {
+    font-size: 1.1em;
+    margin: 20px 0;
+    color: #333;
+}
+
+/* Modern Flat UI Styles for Template Pages */
+
+.topnav {
+    background-color: #FFF8EA;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.topnav-inner {
+    display: flex;
+    align-items: center;
+    padding: 10px 30px;
+    max-width: 100%;
+}
+
+.topnav-logo {
+    margin-right: 30px;
+}
+
+.topnav-logo img {
+    display: block;
+    height: 40px;
+    width: auto;
+}
+
+.topnav-menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 30px;
+}
+
+.topnav-menu li {
+    margin: 0;
+}
+
+.topnav-menu a {
+    text-decoration: none;
+    color: #333;
+    font-size: 1.1em;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.topnav-menu a:hover {
+    background-color: #EFE8DA;
+}
+
+.main-content {
+    background-color: #fff;
+    min-height: calc(100vh - 120px);
+    margin-top: 60px;
+    padding: 40px;
+}
+
+.footer {
+    background-color: #f5f5f5;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #ddd;
+    font-size: 0.9em;
+}
+
+.footer a {
+    color: #555;
+    text-decoration: none;
+    margin: 0 8px;
+}
+
+.footer a:hover {
+    color: #333;
+    text-decoration: underline;
+}
+
+/* Saved Makes List Styles */
+
+.makes-list {
+    margin-top: 30px;
+}
+
+.make-item {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: box-shadow 0.2s;
+}
+
+.make-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.make-info {
+    flex: 1;
+}
+
+.make-name {
+    margin: 0 0 10px 0;
+    font-size: 1.3em;
+    color: #333;
+    font-weight: 600;
+}
+
+.make-details {
+    margin: 0;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.make-type {
+    display: inline-block;
+    background-color: #ABC837;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-right: 15px;
+    font-weight: 500;
+}
+
+.make-date {
+    color: #999;
+}
+
+.make-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Pill Badges for UI Flags */
+
+.pill-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+    margin-left: 5px;
+    vertical-align: middle;
+    letter-spacing: 0.5px;
+}
+
+.pill-badge.experimental {
+    background-color: #FF6600;
+}
+
+.pill-badge.beta {
+    background-color: #2196F3;
+}
+
+.pill-badge.other {
+    background-color: #999999;
+}
+
+/* Materials Page Styles */
+
+.material-group {
+    margin-bottom: 40px;
+}
+
+.material-group h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+    color: #333;
+}
+
+.material-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.material-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    transition: box-shadow 0.2s;
+}
+
+.material-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.material-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.material-card-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    flex: 1;
+}
+
+.material-card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.material-card-body {
+    font-size: 14px;
+}
+
+.material-property {
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.material-notes {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+    font-size: 13px;
+    color: #666;
+    white-space: pre-wrap;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+    font-size: 16px;
+}
+
+/* Form Styles */
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+.form-group small {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #666;
+}
+
+select.form-control {
+    cursor: pointer;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+}
+
+button.small {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+/* Material Selector on Args Page */
+
+.material-selector-container {
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 20px 0;
+}
+
+.material-selector-container h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.material-selector-container table {
+    width: 100%;
+}
+
+.material-selector-actions {
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+.text-link {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+.text-link:hover {
+    text-decoration: underline;
+}
+
+#material-search {
+    min-width: 300px;
+    position: relative;
+}
+
+#material-select {
+    min-width: 300px;
+    margin-top: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #4CAF50;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#material-select option {
+    padding: 8px;
+    cursor: pointer;
+}
+
+#material-select option:hover:not([disabled]) {
+    background-color: #f0f0f0;
+}
+
+#material-select option[disabled] {
+    font-weight: bold;
+    font-size: 11px;
+    color: #999;
+    background-color: #fafafa;
 }

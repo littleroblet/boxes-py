@@ -19,7 +19,7 @@ from boxes import *
 class FanHole(Boxes):
     """Hole pattern for mounting a fan"""
 
-    ui_group = "Holes"
+    ui_group = "Patterns"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

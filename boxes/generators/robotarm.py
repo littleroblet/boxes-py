@@ -20,7 +20,7 @@ from boxes import robot, servos
 class RobotArm(Boxes): # change class name here and below
     """Segments of servo powered robot arm"""
 
-    ui_group = "Part"
+    ui_group = "Robotics"  
 
     def __init__(self) -> None:
         Boxes.__init__(self)

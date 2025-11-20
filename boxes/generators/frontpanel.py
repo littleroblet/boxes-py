@@ -100,7 +100,7 @@ mountinghole x y d_shaft [d_head=0] [angle=0]
 </md-block>
     """
 
-    ui_group = "Holes"
+    ui_group = "Patterns"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

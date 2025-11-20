@@ -19,7 +19,7 @@ from boxes import *
 class HeartBox(Boxes):
     """Box in the form of a heart"""
 
-    ui_group = "FlexBox"
+    ui_group = "Special"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

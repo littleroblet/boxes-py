@@ -26,7 +26,7 @@ class GridfinityBase(Boxes):
     design is based on
     <a href="https://www.youtube.com/watch?app=desktop&v=ra_9zU-mnl8">Zach Freedman's Gridfinity system</a>"""
 
-    ui_group = "Tray"
+    ui_group = "Gridfinity"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

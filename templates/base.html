@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="{{ language or 'en' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Boxes.py{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ static_url }}/boxes-logo.svg" sizes="any">
+    <link rel="icon" type="image/x-icon" href="{{ static_url }}/favicon.ico">
+    <link rel="stylesheet" href="{{ static_url }}/self.css">
+    <script src="{{ static_url }}/self.js"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body{% block body_attrs %}{% endblock %}>
+    <!-- Top Navigation Bar -->
+    <nav class="topnav">
+        <div class="topnav-inner">
+            <div class="topnav-logo">
+                <img src="{{ static_url }}/boxes-logo.svg" alt="Boxes.py Logo" height="40">
+            </div>
+            <ul class="topnav-menu">
+                <li><a href="./{% if language %}?language={{ language }}{% endif %}">Home</a></li>
+                <li><a href="./Makes{% if language %}?language={{ language }}{% endif %}">Makes</a></li>
+                <li><a href="./Materials{% if language %}?language={{ language }}{% endif %}">Materials</a></li>
+                <li><a href="https://florianfesti.github.io/boxes/html/usermanual.html" target="_blank" rel="noopener">Help</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}
+        <p>Base template - content goes here</p>
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <a href="https://hackaday.io/project/10649-boxespy" target="_blank" rel="noopener">Home Page</a> |
+        <a href="https://florianfesti.github.io/boxes/html/index.html" target="_blank" rel="noopener">Documentation</a> |
+        <a href="https://github.com/florianfesti/boxes" target="_blank" rel="noopener">Sources</a> |
+        <a href="https://florianfesti.github.io/boxes/html/give_back.html" target="_blank" rel="noopener">Give Back</a>
+    </footer>
+</body>
+</html>

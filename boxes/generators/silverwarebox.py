@@ -23,6 +23,7 @@ class Silverware(Boxes):
     """
 
     ui_group = "Unstable"
+    ui_flag = "experimental"
 
 
     def __init__(self) -> None:

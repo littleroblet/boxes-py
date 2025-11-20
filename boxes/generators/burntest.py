@@ -36,7 +36,7 @@ correction.
 See also LBeam that can serve as compact BurnTest and FlexTest for testing flex settings.
 """
 
-    ui_group = "Part"
+    ui_group = "Testing"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

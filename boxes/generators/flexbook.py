@@ -19,7 +19,7 @@ from boxes import *
 class FlexBook(Boxes):
     """Box with living hinge styled after a book."""
 
-    ui_group = "FlexBox"
+    ui_group = "Special"
 
     description = """
 If you have an enclosure, arrange the living hinge to be as close to your extractor fan as possible.

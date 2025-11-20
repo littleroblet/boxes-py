@@ -45,7 +45,7 @@ In Use:
 ![Full Set](static/samples/BrickSorter-6.jpg)
 """
 
-    ui_group = "Box"
+    ui_group = "Organisation"
 
     # level name, size of the holes in mm, and the thickness of the grid
     sieve_sizes = OrderedDict(

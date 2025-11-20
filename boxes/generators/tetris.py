@@ -19,7 +19,7 @@ from boxes import *
 class Tetris(Boxes):
     """3D Tetris shapes"""
 
-    ui_group = "Misc"
+    ui_group = "Display"
 
     def __init__(self):
         Boxes.__init__(self)

@@ -19,7 +19,7 @@ from boxes import *
 class Console2(Boxes):
     """Console with slanted panel and service hatches"""
 
-    ui_group = "Box"
+    ui_group = "Electronics"
 
     description = """
 This box is designed as a housing for electronic projects. It has hatches that can be re-opened with simple tools. It intentionally cannot be opened with bare hands - if build with thin enough material.

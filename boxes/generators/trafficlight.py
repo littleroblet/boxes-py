@@ -36,7 +36,7 @@ class ShadyEdge(edges.BaseEdge):
 
 class TrafficLight(Boxes): # change class name here and below
     """Traffic light"""
-
+    ui_group = "Display"
     description = """The traffic light was created to visualize the status of a Icinga monitored system.
 
 When turned by 90°, it can be also used to create a bottle holder.

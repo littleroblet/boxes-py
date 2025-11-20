@@ -20,7 +20,7 @@ from boxes import *
 class DisplayCase(Boxes):
     """Fully closed box intended to be cut from transparent acrylics and to serve as a display case."""
 
-    ui_group = "Box"
+    ui_group = "Display"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

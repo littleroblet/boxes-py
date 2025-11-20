@@ -19,7 +19,7 @@ from boxes import *
 class AllEdges(Boxes):
     """Showing all edge types"""
 
-    ui_group = "Misc"
+    ui_group = "Testing"
 
     def __init__(self) -> None:
         Boxes.__init__(self)
