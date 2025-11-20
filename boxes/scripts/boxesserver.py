@@ -139,9 +139,38 @@ class BServer:
                 self.staticdir = os.path.join(os.path.dirname(__file__), '..', '../static/')
         
         # Setup Jinja2 templates
-        template_path = os.path.join(os.path.dirname(__file__), '../../templates')
-        if not os.path.isabs(template_path):
-            template_path = os.path.abspath(template_path)
+        # Try multiple paths to find templates directory
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Possible template locations
+        template_paths = [
+            os.path.join(script_dir, '../../templates'),  # Local dev: boxes/scripts -> root/templates
+            os.path.join(script_dir, '../templates'),     # If templates in boxes/templates
+            '/app/templates',                              # Docker absolute path
+            os.path.join(os.getcwd(), 'templates'),       # Relative to working directory
+        ]
+        
+        template_path = None
+        for path in template_paths:
+            abs_path = os.path.abspath(path)
+            if os.path.isdir(abs_path):
+                template_path = abs_path
+                break
+        
+        if template_path is None:
+            # Last resort: try to find it relative to boxes module
+            try:
+                import boxes
+                boxes_dir = os.path.dirname(os.path.dirname(boxes.__file__))
+                fallback_path = os.path.join(boxes_dir, 'templates')
+                if os.path.isdir(fallback_path):
+                    template_path = fallback_path
+            except:
+                pass
+        
+        if template_path is None:
+            raise RuntimeError(f"Templates directory not found. Tried: {template_paths}")
+        
         self.jinja_env = Environment(
             loader=FileSystemLoader(template_path),
             autoescape=select_autoescape(['html', 'xml'])
