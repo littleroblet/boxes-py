@@ -7,6 +7,8 @@ from boxes.generators.traylayout import TrayLayout
 class GridfinityTrayLayout(TrayLayout):
     """A Gridfinity Tray Generator based on TrayLayout"""
 
+    ui_group = "Gridfinity"
+
     description = """
 This is a general purpose gridfinity tray generator.  You can create
 somewhat arbitrarily shaped trays, or just do nothing for simple grid

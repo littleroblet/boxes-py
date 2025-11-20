@@ -31,7 +31,7 @@ See the diagram below for dimensions.
 ![backlit](static/samples/Shadowbox-backlit.jpg)
 """
 
-    ui_group = "Misc"
+    ui_group = "Art"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

@@ -37,9 +37,20 @@ class UIGroup:
 
 
 ui_groups: list[UIGroup] = [
-    UIGroup("Box", "Boxes", image="UniversalBox"),
-    UIGroup("FlexBox", "Boxes with flex", image="RoundedBox"),
+    UIGroup("Basic", "Basic Boxes", image="ABox"),
+    UIGroup("Organisation", "Organizational Boxes", image="CardBox"),
     UIGroup("Tray", "Trays and Drawer Inserts", image="TypeTray"),
+    UIGroup("Special", "Special Boxes", image="FlexBook"),
+    UIGroup("Art", "Art and Photo Frames", image="Shadowbox"),
+    UIGroup("FlexBox", "Flex & Living Hinges", image="RoundedBox"),
+    UIGroup("Patterns", "Patterns & Templates", image="GridPattern"),
+    UIGroup("Display", "Display Cases and Items for Display", image="Castle"),
+    UIGroup("Electronics", "Electronics Enclosures", image="ElectroBox"),
+    UIGroup("Robotics", "Robotic Parts and Robots", image="RobotArm"),
+    UIGroup("Testing", "Testing and Calibration Boxes", image="CalibrationBox"),
+    UIGroup("Gridfinity", "Gridfinity Compatible Boxes", image="GridfinityBox"),
+    UIGroup("Rail", "Rail Mounted Systems", image="WallDrillBox"),
+    UIGroup("Box", "Boxes", image="UniversalBox"),
     UIGroup("Shelf", "Shelves", image="DisplayShelf"),
     UIGroup("WallMounted", image="WallTypeTray"),
     UIGroup("Holes", "Hole patterns", image=""),

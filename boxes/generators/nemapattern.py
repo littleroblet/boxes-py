@@ -19,7 +19,7 @@ from boxes import *
 class NemaPattern(Boxes):
     """Mounting holes for a Nema motor"""
 
-    ui_group = "Holes"
+    ui_group = "Patterns"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

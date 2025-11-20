@@ -19,7 +19,7 @@ from boxes import *
 class FlexTest(Boxes):
     """Piece for testing different flex settings"""
 
-    ui_group = "Part"
+    ui_group = "Testing"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

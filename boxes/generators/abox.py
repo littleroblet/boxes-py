@@ -22,7 +22,7 @@ class ABox(Boxes):
 
     description = "This box is kept simple on purpose. If you need more features have a look at the UniversalBox."
 
-    ui_group = "Box"
+    ui_group = "Basic"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

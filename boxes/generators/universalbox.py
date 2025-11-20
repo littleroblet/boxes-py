@@ -22,7 +22,7 @@ from boxes.lids import _TopEdge
 class UniversalBox(_TopEdge):
     """Box with various options for different styles and lids"""
 
-    ui_group = "Box"
+    ui_group = "Basic"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

@@ -21,7 +21,7 @@ class EngravingFrame(Boxes):
 
     description = "This box is a frame for an engraving."
 
-    ui_group = "Box"
+    ui_group = "Art"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

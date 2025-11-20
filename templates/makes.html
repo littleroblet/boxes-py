@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Saved Makes - Boxes.py{% endblock %}
+
+{% block body_attrs %} onload="initMakesPage()"{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+    <h2>Saved Makes</h2>
+    <p>Your locally saved box configurations are stored in your browser's localStorage.</p>
+
+    <div id="saved-makes-container">
+        <p>Loading...</p>
+    </div>
+</div>
+{% endblock %}

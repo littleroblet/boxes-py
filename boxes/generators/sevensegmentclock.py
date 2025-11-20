@@ -28,9 +28,9 @@ Adding a diffuser on top or at the bottom of the segment holes will probably enh
 There is currently not a lot of space for electronics and this generator is still untested. Good luck!
 """
 
-    ui_group = "Misc"
-    ui_group = "Unstable"
-
+    ui_group = "Electronics"
+    ui_flag = "experimental"
+    
     def __init__(self):
         Boxes.__init__(self)
         self.addSettingsArgs(edges.FingerJointSettings)

@@ -25,7 +25,7 @@ class Shoe(Boxes):
     y > tophole + r + fronttop;
     height > frontheight."""
 
-    ui_group = "Misc"
+    ui_group = "Display"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

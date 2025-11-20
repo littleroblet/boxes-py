@@ -19,7 +19,7 @@ from boxes import *
 class Console(Boxes):
     """Console with slanted panel"""
 
-    ui_group = "Box"
+    ui_group = "Electronics"
 
     description = """
 

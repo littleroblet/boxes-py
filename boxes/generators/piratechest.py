@@ -25,7 +25,7 @@ class PirateChest(Boxes):
     be a bit tricky to assemble. Keep track of how the parts fit together.
     Part with label "lid back" is placed in the hinges"""
 
-    ui_group = "Box"
+    ui_group = "Special"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

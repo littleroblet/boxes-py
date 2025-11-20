@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Materials - Boxes.py{% endblock %}
+
+{% block body_attrs %} onload="initMaterialsPage()"{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h2>Materials</h2>
+            <p>Manage your material library for quick access when creating boxes.</p>
+        </div>
+        <button class="primary" onclick="openMaterialModal()">Add Material</button>
+    </div>
+
+    <div id="materials-list">
+        <p>Loading...</p>
+    </div>
+</div>
+
+<!-- Material Add/Edit Modal -->
+<div id="materialModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close-modal" onclick="closeModal('materialModal')">&times;</span>
+            Add Material
+        </div>
+        <form id="materialForm" onsubmit="event.preventDefault(); saveMaterialForm();">
+            <div class="modal-body">
+                <input type="hidden" id="materialId">
+                
+                <div class="form-group">
+                    <label for="materialName">Name *</label>
+                    <input type="text" id="materialName" class="form-control" placeholder="e.g., 3mm Birch Plywood" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="materialType">Type *</label>
+                    <select id="materialType" class="form-control" required>
+                        <option value="Wood">Wood</option>
+                        <option value="Acrylic">Acrylic</option>
+                        <option value="Cardboard">Cardboard</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="materialThickness">Thickness (mm) *</label>
+                    <input type="number" id="materialThickness" class="form-control" step="0.1" min="0.1" placeholder="3.0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="materialBurn">Burn Correction (mm) *</label>
+                    <input type="number" id="materialBurn" class="form-control" step="0.01" value="0.1" placeholder="0.1" required>
+                    <small>Bigger values for tighter fit</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="materialSpacing">Spacing</label>
+                    <input type="text" id="materialSpacing" class="form-control" value="2" placeholder="2">
+                    <small>Spacing around parts (multiples of thickness)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="materialNotes">Notes</label>
+                    <textarea id="materialNotes" class="form-control" rows="3" placeholder="Machine settings, tips, etc."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="tertiary" onclick="closeModal('materialModal')">Cancel</button>
+                <button type="submit" class="primary">Save Material</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

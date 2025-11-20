@@ -33,6 +33,7 @@ from wsgiref.simple_server import make_server
 
 import markdown  # type: ignore
 import qrcode
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 try:
     import boxes.generators
@@ -40,6 +41,7 @@ except ImportError:
     sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../.."))
     import boxes.generators
 import boxes
+from boxes.routes import serveMakes, serveMaterials
 
 
 class FileChecker(threading.Thread):
@@ -135,6 +137,16 @@ class BServer:
             self.staticdir = os.path.join(os.path.dirname(__file__), '../static/')
             if not os.path.isdir(self.staticdir):
                 self.staticdir = os.path.join(os.path.dirname(__file__), '..', '../static/')
+        
+        # Setup Jinja2 templates
+        template_path = os.path.join(os.path.dirname(__file__), '../../templates')
+        if not os.path.isabs(template_path):
+            template_path = os.path.abspath(template_path)
+        self.jinja_env = Environment(
+            loader=FileSystemLoader(template_path),
+            autoescape=select_autoescape(['html', 'xml'])
+        )
+        
         self._languages = None
         self._cache: dict[Any, Any] = {}
         self.url_prefix = url_prefix
@@ -263,6 +275,26 @@ class BServer:
 <h2 style="margin: 0px 0px 0px 20px;">{_(name)}</h2>
         <p>{_(box.__doc__) if box.__doc__ else ""}</p>
 <form id="arguments" action="{action}" method="GET" rel="nofollow">
+        
+<!-- Material Selector -->
+<div class="material-selector-container">
+    <h3>{_("Material Selection")}</h3>
+    <table role="presentation">
+        <tr>
+            <td><label for="material-search">{_("Select Material")}</label></td>
+            <td>
+                <input type="text" id="material-search" class="form-control" placeholder="{_("Type to search materials...")}" autocomplete="off" />
+                <select id="material-select" class="form-control" size="5" onchange="applyMaterial()" style="display:none;">
+                </select>
+                <div class="material-selector-actions">
+                    <a href="/Materials" target="_blank" class="text-link">{_("Manage Materials")}</a>
+                </div>
+            </td>
+            <td>{_("Quickly apply saved material settings to thickness, burn, and spacing fields")}</td>
+        </tr>
+    </table>
+</div>
+
         """]
         groupid = 0
         for group in box.argparser._action_groups[3:] + box.argparser._action_groups[:3]:
@@ -284,12 +316,32 @@ class BServer:
 <input type="hidden" name="language" id="language" value="{lang_name}">
 
 <p>
-    <button name="render" value="1" formtarget="_blank">{_("Generate")}</button>
-    <button name="render" value="2" formtarget="_self">{_("Download")}</button>
-    <button name="render" value="0" formtarget="_self">{_("Save to URL")}</button>
-    <button name="render" value="3" formtarget="_blank">{_("QR Code")}</button>
+    <button name="render" value="1" class="primary" formtarget="_blank">{_("Generate")}</button>
+    <button name="render" value="2" class="secondary" formtarget="_self">{_("Download")}</button>
+    <button name="render" value="0" class="tertiary" formtarget="_self">{_("Save to URL")}</button>
+    <button type="button" class="tertiary" onclick="saveToLocal()">{_("Save to Local")}</button>
+    <button name="render" class="tertiary" value="3" formtarget="_blank">{_("QR Code")}</button>
 </p>
 </form>
+
+<!-- Save to Local Modal -->
+<div id="saveLocalModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close-modal" onclick="closeModal('saveLocalModal')">&times;</span>
+            {_("Save Configuration")}
+        </div>
+        <div class="modal-body">
+            <label for="configName">{_("Configuration Name")}:</label>
+            <input type="text" id="configName" placeholder="{_("Enter a name for this configuration")}" />
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="secondary" onclick="closeModal('saveLocalModal')">{_("Cancel")}</button>
+            <button type="button" class="primary" onclick="confirmSaveToLocal()">{_("Save")}</button>
+        </div>
+    </div>
+</div>
+
 </div>
 
 <div class="clear"></div>
@@ -372,7 +424,19 @@ class BServer:
                 docs = ""
                 if box.__doc__:
                     docs = " - " + _(box.__doc__)
-                result.append(f"""     <li class="thumbnail" data-thumbnail="{self.static_url}/samples/{name}-thumb.jpg" id="search_id_{name}"><a href="{name}{langparam}">{_(name)}</a>{docs}</li>\n""")
+                
+                # Get the ui_flag if it exists
+                ui_flag = getattr(box, 'ui_flag', None)
+                flag_pill = ''
+                if ui_flag:
+                    flag_class = 'other'
+                    if ui_flag.lower() == 'experimental':
+                        flag_class = 'experimental'
+                    elif ui_flag.lower() == 'beta':
+                        flag_class = 'beta'
+                    flag_pill = f' <span class="pill-badge {flag_class}">{html.escape(ui_flag)}</span>'
+                
+                result.append(f"""     <li class="thumbnail" data-thumbnail="{self.static_url}/samples/{name}-thumb.jpg" id="search_id_{name}"><a href="{name}{langparam}">{_(name)}</a>{flag_pill}{docs}</li>\n""")
             result.append("   </ul>\n  </div>\n")
         result.append(f"""
 </div>
@@ -474,7 +538,10 @@ class BServer:
 
     def genLinks(self, lang, preview=False):
         _ = lang.gettext
-        links = [("https://florianfesti.github.io/boxes/html/usermanual.html", _("Help")),
+        links = [
+                 ("/Makes", _("Makes")),
+                 ("/Materials", _("Materials")),
+                 ("https://florianfesti.github.io/boxes/html/usermanual.html", _("Help")),
                  ("https://hackaday.io/project/10649-boxespy", _("Home Page")),
                  ("https://florianfesti.github.io/boxes/html/index.html", _("Documentation")),
                  ("https://github.com/florianfesti/boxes", _("Sources"))]
@@ -606,10 +673,21 @@ class BServer:
                 static_filename = os.path.join(self.staticdir, fn)
                 alt = f"{_(name)}"
                 href = f"{name}{langparam}"
-                if not os.path.exists(static_filename):
-                    result.append(f"""  <span class="gallery_missing" id="search_id_{name}"><a href="{href}">{_(box.__doc__)}<br><br>{_(name)}</a></span>\n""")
-                else:
-                    result.append(f"""  <span class="gallery" id="search_id_{name}"><a title="{_(name)} - {html.escape(_(box.__doc__))}" href="{href}"><img alt="{alt}" src="{thumbnail}"><br>{_(name)}</a></span>\n""")
+                fallback_img = f"{self.static_url}/samples/no-image-thumb.jpg"
+                
+                # Get the ui_flag if it exists
+                ui_flag = getattr(box, 'ui_flag', None)
+                flag_pill = ''
+                if ui_flag:
+                    flag_class = 'other'
+                    if ui_flag.lower() == 'experimental':
+                        flag_class = 'experimental'
+                    elif ui_flag.lower() == 'beta':
+                        flag_class = 'beta'
+                    flag_pill = f'<span class="pill-badge {flag_class}">{html.escape(ui_flag)}</span>'
+                
+                # Always show gallery item with image, use fallback if thumbnail doesn't exist
+                result.append(f"""  <span class="gallery" id="search_id_{name}"><a title="{_(name)} - {html.escape(_(box.__doc__))}" href="{href}"><img alt="{alt}" src="{thumbnail}" onerror="this.onerror=null; this.src='{fallback_img}';"><br>{_(name)} {flag_pill}</a></span>\n""")
 
         result.append(f"""
 </div><div style="width: 5%; float: left;"></div>
@@ -648,6 +726,12 @@ class BServer:
 
         if not name or name == "Gallery":
             return self.serveGallery(environ, start_response, lang)
+
+        if name == "Makes":
+            return serveMakes(self, environ, start_response, lang)
+
+        if name == "Materials":
+            return serveMaterials(self, environ, start_response, lang)
 
         box_cls = self.boxes.get(name, None)
         if not box_cls:
