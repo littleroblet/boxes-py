@@ -41,6 +41,7 @@ except ImportError:
     sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../.."))
     import boxes.generators
 import boxes
+from boxes.routes import serveMakes, serveMaterials
 
 
 class FileChecker(threading.Thread):
@@ -698,38 +699,6 @@ class BServer:
         self._cache[("Gallery", lang_name)] = [s.encode("utf-8") for s in result]
         return self._cache[("Gallery", lang_name)]
 
-    def serveMakes(self, environ, start_response, lang):
-        """Serve the Saved Makes page using Jinja2 template."""
-        _ = lang.gettext
-        lang_name = lang.info().get('language', None)
-
-        start_response("200 OK", [('Content-type', "text/html; charset=utf-8")])
-
-        # Render the template
-        template = self.jinja_env.get_template('makes.html')
-        html_content = template.render(
-            static_url=self.static_url,
-            language=lang_name
-        )
-        
-        return [html_content.encode("utf-8")]
-
-    def serveMaterials(self, environ, start_response, lang):
-        """Serve the Materials page using Jinja2 template."""
-        _ = lang.gettext
-        lang_name = lang.info().get('language', None)
-
-        start_response("200 OK", [('Content-type', "text/html; charset=utf-8")])
-
-        # Render the template
-        template = self.jinja_env.get_template('materials.html')
-        html_content = template.render(
-            static_url=self.static_url,
-            language=lang_name
-        )
-        
-        return [html_content.encode("utf-8")]
-
     def serve(self, environ, start_response):
         # serve favicon from static for generated SVGs
         if environ["PATH_INFO"] == "favicon.ico":
@@ -759,10 +728,10 @@ class BServer:
             return self.serveGallery(environ, start_response, lang)
 
         if name == "Makes":
-            return self.serveMakes(environ, start_response, lang)
+            return serveMakes(self, environ, start_response, lang)
 
         if name == "Materials":
-            return self.serveMaterials(environ, start_response, lang)
+            return serveMaterials(self, environ, start_response, lang)
 
         box_cls = self.boxes.get(name, None)
         if not box_cls:
