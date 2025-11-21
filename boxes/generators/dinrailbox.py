@@ -43,7 +43,11 @@ class DinRailEdge(edges.FingerHoleEdge):
 class DinRailBox(Boxes):
     """Box for DIN rail used in electrical junction boxes"""
 
-    ui_group = "WallMounted"
+    ui_group = "Rail"
+    tags = ["dinrail", "electrical", "part"]
+    label = "DIN Rail Box"
+    ui_flag = "Beta"
+    
 
     def latch(self, l, move=None):
 

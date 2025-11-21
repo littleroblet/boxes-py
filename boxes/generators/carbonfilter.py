@@ -40,6 +40,10 @@ The last two types of ribs do not have finger joints on the outside but still ne
 """
 
     ui_group = "Misc"
+    tags = ["filter", "charcoal", "part"]
+    label = "Carbon Filter"
+    ui_flag = "Beta"
+
 
     def __init__(self) -> None:
         Boxes.__init__(self)

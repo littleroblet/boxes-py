@@ -29,6 +29,10 @@ class Keyboard:
     * https://www.kailhswitch.com/uploads/201815927/PG151101S11.pdf
     """
 
+    tags = ["electronics", "keyboard", "mechanical keyboard"]
+    ui_group = 'Electronics'
+    
+
     STANDARD_KEY_SPACING = 19.05
     SWITCH_CASE_SIZE = 15.6
     FRAME_CUTOUT = 14

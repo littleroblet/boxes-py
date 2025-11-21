@@ -35,6 +35,10 @@ class FrontEdge(edges.Edge):
 
 class WallChiselHolder(_WallMountedBox):
     """Wall tool holder for chisels, files and similar tools"""
+    ui_group = "Rail"
+    tags = ["chisel", "holder", "part", "rail"]
+    label = "Wall Chisel Holder"
+    
 
     def __init__(self) -> None:
         super().__init__()

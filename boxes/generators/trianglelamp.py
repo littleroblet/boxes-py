@@ -36,7 +36,9 @@ class CornerEdge(edges.Edge):
 class TriangleLamp(Boxes):
     """Triangle LED Lamp"""
 
-    ui_group = "Misc"
+    ui_group = "Electronics"
+    tags = ["electronics", "led", "lamp", "triangle"]
+    
 
     def __init__(self) -> None:
         Boxes.__init__(self)

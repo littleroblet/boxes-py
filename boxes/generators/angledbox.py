@@ -20,6 +20,9 @@ class AngledBox(Boxes):
     """Box with both ends cornered"""
 
     ui_group = "Box"
+    description = """Box with angled sides and cornered top and bottom."""
+    tags = ["fancy", "angled", "lided"]
+    created_date = "2017-01-09"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

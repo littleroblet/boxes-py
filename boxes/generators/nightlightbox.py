@@ -19,7 +19,7 @@ from boxes.lids import _TopEdge
 class NightLightBox(_TopEdge):
     """Simple decorative lamp with creatively laser cut plates"""
 
-    ui_group = "Misc"
+    ui_group = "Art"
     description = "This is a simple light box with a closed compartment for electronics and the backlighting."
 
     def __init__(self) -> None:

@@ -53,7 +53,6 @@ ui_groups: list[UIGroup] = [
     UIGroup("Box", "Boxes", image="UniversalBox"),
     UIGroup("Shelf", "Shelves", image="DisplayShelf"),
     UIGroup("WallMounted", image="WallTypeTray"),
-    UIGroup("Holes", "Hole patterns", image=""),
     UIGroup("Part", "Parts and Samples", image="BurnTest"),
     UIGroup("Misc", image="TrafficLight"),
     UIGroup("Unstable", description="Generators are still untested or need manual adjustment to be useful."),

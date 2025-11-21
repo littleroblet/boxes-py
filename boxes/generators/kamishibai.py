@@ -20,7 +20,7 @@ from boxes.edges import HingeSettings
 class Kamishibai(_TopEdge):
     """Kamishibai butai (japanese image theatre)"""
 
-    ui_group = "Misc"
+    ui_group = "Art"
     description = """
     This is a kamishibai butai (japanese image theatre), with several options for covering the different
     holes when put away.
