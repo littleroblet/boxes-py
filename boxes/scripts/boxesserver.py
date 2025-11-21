@@ -160,8 +160,8 @@ class BServer:
         if template_path is None:
             # Last resort: try to find it relative to boxes module
             try:
-                import boxes
-                boxes_dir = os.path.dirname(os.path.dirname(boxes.__file__))
+                import boxes as boxes_module
+                boxes_dir = os.path.dirname(os.path.dirname(boxes_module.__file__))
                 fallback_path = os.path.join(boxes_dir, 'templates')
                 if os.path.isdir(fallback_path):
                     template_path = fallback_path
