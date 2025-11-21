@@ -38,7 +38,9 @@ class CoinHolderSideEdge(edges.BaseEdge):
 class CoinDisplay(Boxes):
     """A showcase for a single coin"""
 
-    ui_group = "Misc"
+    ui_group = "Display"
+    tags = ["coin", "showcase", "part"]
+    label = "Coin Display"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

@@ -18,6 +18,9 @@ from boxes.walledges import _WallMountedBox
 
 class WallCaliper(_WallMountedBox):
     """Holds a single caliper to a wall"""
+    ui_group = "Rail"
+    tags = ["caliper", "holder", "part", "rail"]
+    label = "Wall Caliper Holder"
 
     def __init__(self) -> None:
         super().__init__()

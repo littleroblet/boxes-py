@@ -18,6 +18,13 @@ from boxes import *
 
 class PoleHook(Boxes): # change class name here and below
     """Hook for pole like things to be clamped to another pole"""
+    ui_group = "Part"
+    tags = ["clamp", "hook", "pole", "part"]
+    ui_flag = "Beta"
+    created_date = "2024-06-10"
+    label = "Pole Hook"
+
+
 
     def __init__(self) -> None:
         Boxes.__init__(self)
