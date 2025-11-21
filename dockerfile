@@ -25,6 +25,21 @@ RUN mv scripts/boxesserver scripts/boxesserver.py
 
 FROM python:3.12-slim
 
+ARG VERSION
+ARG COMMIT
+ARG CREATED
+
+LABEL \
+    org.opencontainers.image.title="Boxes-Py" \
+    org.opencontainers.image.description="Python-based Boxes generator server. Unraid-ready and Kiwi-approved." \
+    org.opencontainers.image.url="https://github.com/littleroblet/boxes-py" \
+    org.opencontainers.image.source="https://github.com/littleroblet/boxes-py" \
+    org.opencontainers.image.documentation="https://github.com/littleroblet/boxes-py" \
+    org.opencontainers.image.authors="um <nobody@nowhere.nz>" \
+    org.opencontainers.image.version="$VERSION" \
+    org.opencontainers.image.revision="$COMMIT" \
+    org.opencontainers.image.created="$CREATED"
+
 # Install pstoedit (needed for DXF -> SVG conversions)
 RUN apt update && \
   apt install -y pstoedit --no-install-recommends && \
@@ -32,6 +47,9 @@ RUN apt update && \
 
 WORKDIR /app
 COPY --from=builder /app /app
+
+# Set static URL for self-hosted deployment
+ENV STATIC_URL=static
 
 EXPOSE 8000
 
