@@ -25,7 +25,9 @@ Set *hi* larger than *h* to leave gap between the inner and outer shell. This ca
 ![Bottom view](static/samples/TwoPiece2.jpg)
 """
 
-    ui_group = "Box"
+    ui_group = "Special"
+    tags = ["two piece", "lided"]
+    label = "Two Piece Box"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

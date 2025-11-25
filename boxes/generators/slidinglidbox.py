@@ -13,8 +13,10 @@ class SlidingLidBox(Boxes):
 ![Closed](static/samples/SlidingLidBox-2.jpg)
 """
 
-    ui_group = "Box"
-
+    ui_group = "Special"
+    tags = ["sliding lid", "lided"]
+    label = "Sliding Lid Box"
+    
     def __init__(self) -> None:
         Boxes.__init__(self)
         self.addSettingsArgs(edges.FingerJointSettings)

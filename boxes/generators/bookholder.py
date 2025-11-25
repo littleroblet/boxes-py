@@ -31,7 +31,9 @@ BookHolder with default parameters (A4 size, landscape, back_support):
 """
 
 
-    ui_group = "Misc"
+    ui_group = "Display"
+    tags = ["book holder", "display stand", "angled stand"]
+    label = "Book Holder"
 
     def __init__(self) -> None:
         super().__init__()

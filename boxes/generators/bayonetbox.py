@@ -20,7 +20,9 @@ class BayonetBox(Boxes):
     """Round box made from layers with twist on top"""
 
     description = """Glue together - all outside rings to the bottom, all inside rings to the top."""
-    ui_group = "Box"
+    ui_group = "Special"
+    tags = ["cylindrical", "twist", "lided"]
+    label = "Bayonet Box"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

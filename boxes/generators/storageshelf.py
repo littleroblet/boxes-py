@@ -20,8 +20,11 @@ from boxes.lids import _TopEdge
 class StorageShelf(_TopEdge):
     """StorageShelf can be used to store Typetray"""
 
-    ui_group = "Shelf"
+    ui_group = "Organisation"
     description = "This is a simple shelf box."
+    tags = ["organisation", "shelf", "storage"]
+    label = "Storage Shelf"
+    
 
     def __init__(self) -> None:
         Boxes.__init__(self)

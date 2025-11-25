@@ -77,6 +77,11 @@ class StackableBinEdge(edges.BaseEdge):
 
 class WallStackableBin(_WallMountedBox):
     """A wall-mounted bin that can stack or hang from a wall."""
+
+    ui_group = "WallSystem"
+    tags = ["bin", "stackable", "part", "wall"]
+    label = "Wall Stackable Bin"
+
     description = '''
 ####Features:
 - Configurable dimensions (width, height, depth)

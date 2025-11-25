@@ -39,7 +39,9 @@ class Dispenser(Boxes):
     description = """Set *bottomheight* to 0 for a wall mounting variant.
 Please add mounting holes yourself."""
 
-    ui_group = "Misc"
+    ui_group = "Organisation"
+    tags = ["dispenser", "stackable items", "holder"]
+    label = "Dispenser"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

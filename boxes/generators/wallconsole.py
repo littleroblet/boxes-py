@@ -18,6 +18,9 @@ from boxes.walledges import _WallMountedBox
 
 class WallConsole(_WallMountedBox):
     """Outset and angled plate to mount stuff to"""
+    ui_group = "WallSystem"
+    tags = ["console", "part", "wall"]
+    label = "Wall Console"  
 
     def __init__(self) -> None:
         super().__init__()

@@ -4,7 +4,10 @@ from boxes import *
 class SlidingDrawer(Boxes):
     """Sliding drawer box"""
 
-    ui_group = "Box"
+    ui_group = "Organisation"
+    tags = ["sliding drawer", "lided"]
+    label = "Sliding Drawer Box"
+
 
     def __init__(self) -> None:
         Boxes.__init__(self)

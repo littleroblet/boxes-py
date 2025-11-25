@@ -19,6 +19,9 @@ from boxes.lids import _TopEdge
 
 class MagazineFile(Boxes):
     """Open magazine file"""
+    ui_group = "Organisation"
+    tags = ["magazine file", "document holder", "file organizer"]
+    label = "Magazine File"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

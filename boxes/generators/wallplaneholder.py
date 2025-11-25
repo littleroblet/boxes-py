@@ -18,6 +18,9 @@ from boxes.walledges import _WallMountedBox
 
 class WallPlaneHolder(_WallMountedBox):
     """Hold a plane to a wall"""
+    ui_group = "WallSystem"
+    tags = ["plane", "holder", "part", "wall"]
+    label = "Wall Plane Holder"
 
     def __init__(self) -> None:
         super().__init__()

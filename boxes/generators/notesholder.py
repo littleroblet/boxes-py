@@ -70,7 +70,9 @@ don't fit on the front (and back) walls you can make them smaller by
 reducing `width` and/or increasing `angle` in the `Settings for
 Stackable Edges`. Reducing the `opening` will also give more space for
 the feet."""
-    ui_group = "Box"
+    ui_group = "Organisation"
+    tags = ["organisation", "notes", "holder"]
+    label = "Notes Holder"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

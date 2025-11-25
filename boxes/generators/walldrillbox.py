@@ -21,7 +21,7 @@ from .drillstand import DrillStand
 
 class WallDrillBox(DrillStand, _WallMountedBox):
     """Box for drills with each compartment with a different height"""
-    ui_group = "WallMounted"
+    ui_group = "WallSystem"
 
     def __init__(self) -> None:
         _WallMountedBox.__init__(self) # don't call DrillStand.__init__

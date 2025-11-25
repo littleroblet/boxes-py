@@ -6,16 +6,18 @@
 
 {% block content %}
 <div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <div>
-            <h2>Materials</h2>
-            <p>Manage your material library for quick access when creating boxes.</p>
-        </div>
+    <div style="margin-bottom: 30px;">
+        <h2 style="margin-bottom: 8px;">Materials</h2>
+        <p style="margin-bottom: 20px; color: #666;">Manage your material library for quick access when creating boxes.</p>
         <button class="primary" onclick="openMaterialModal()">Add Material</button>
     </div>
 
-    <div id="materials-list">
-        <p>Loading...</p>
+    <div id="materials-list" class="card-list">
+        <div class="card">
+            <div class="card-body">
+                <p>Loading...</p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -36,13 +38,11 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="materialType">Type *</label>
-                    <select id="materialType" class="form-control" required>
-                        <option value="Wood">Wood</option>
-                        <option value="Acrylic">Acrylic</option>
-                        <option value="Cardboard">Cardboard</option>
-                        <option value="Other">Other</option>
+                    <label for="materialType">Category *</label>
+                    <select id="materialType" class="form-control" onchange="handleCategorySelect(this)" required>
+                        <option value="Uncategorized">Uncategorized</option>
                     </select>
+                    <small>Select a category or create a new one</small>
                 </div>
                 
                 <div class="form-group">
@@ -68,7 +68,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="tertiary" onclick="closeModal('materialModal')">Cancel</button>
+                <button type="button" class="accent lightgrey" onclick="closeModal('materialModal')">Cancel</button>
                 <button type="submit" class="primary">Save Material</button>
             </div>
         </form>

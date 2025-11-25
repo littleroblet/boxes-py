@@ -31,7 +31,9 @@ The latch is one-way: the box can be closed freely
 but can't be inadvertently opened.
 """
 
-    ui_group = "Box"
+    ui_group = "Special"
+    tags = ["hinge", "lided", "latch"]
+    label = "Side Hinge Box"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

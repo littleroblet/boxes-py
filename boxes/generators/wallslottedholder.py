@@ -36,6 +36,9 @@ class FrontEdge(edges.Edge):
 
 class WallSlottedHolder(_WallMountedBox):
     """Wall tool holder with slots"""
+    ui_group = "WallSystem"
+    tags = ["slot", "holder", "part", "wall"]
+    label = "Wall Slotted Holder"
 
     def __init__(self) -> None:
         super().__init__()

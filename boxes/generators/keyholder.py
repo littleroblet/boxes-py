@@ -84,6 +84,8 @@ Full picture:
 """
 
     ui_group = "WallMounted"
+    tags = ["key", "holder", "part", "wall"]
+    label = "Key Holder"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

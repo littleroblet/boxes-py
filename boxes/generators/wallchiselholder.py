@@ -35,7 +35,7 @@ class FrontEdge(edges.Edge):
 
 class WallChiselHolder(_WallMountedBox):
     """Wall tool holder for chisels, files and similar tools"""
-    ui_group = "Rail"
+    ui_group = "WallSystem"
     tags = ["chisel", "holder", "part", "rail"]
     label = "Wall Chisel Holder"
     

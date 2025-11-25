@@ -41,7 +41,7 @@ except ImportError:
     sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../.."))
     import boxes.generators
 import boxes
-from boxes.routes import serveMakes, serveMaterials
+from boxes.routes import serveHome, serveMakes, serveMaterials, serveSettings
 
 
 class FileChecker(threading.Thread):
@@ -301,29 +301,33 @@ class BServer:
 </div>
 <hr>
 
-<h2 style="margin: 0px 0px 0px 20px;">{_(name)}</h2>
+<h2 style="margin: 0px 0px 0px 20px;">{_(name)} <button type="button" class="favorite" onclick="toggleFavorite('{name}')" id="favorite-btn" title="{_('Add to / Remove from Favorites')}">★</button></h2>
         <p>{_(box.__doc__) if box.__doc__ else ""}</p>
 <form id="arguments" action="{action}" method="GET" rel="nofollow">
-        
-<!-- Material Selector -->
-<div class="material-selector-container">
-    <h3>{_("Material Selection")}</h3>
-    <table role="presentation">
-        <tr>
-            <td><label for="material-search">{_("Select Material")}</label></td>
-            <td>
-                <input type="text" id="material-search" class="form-control" placeholder="{_("Type to search materials...")}" autocomplete="off" />
-                <select id="material-select" class="form-control" size="5" onchange="applyMaterial()" style="display:none;">
-                </select>
-                <div class="material-selector-actions">
-                    <a href="/Materials" target="_blank" class="text-link">{_("Manage Materials")}</a>
-                </div>
-            </td>
-            <td>{_("Quickly apply saved material settings to thickness, burn, and spacing fields")}</td>
-        </tr>
-    </table>
-</div>
 
+<!-- Material Selector Panel -->
+<div class="panel">
+    <div class="panel-header">
+        <h4>{_("Material Selection")}</h4>
+    </div>
+    <div class="panel-body">
+        <table role="presentation">
+            <tr>
+                <td><label for="material-search">{_("Select Material")}</label></td>
+                <td>
+                    <input type="text" id="material-search" class="form-control" placeholder="{_("Type to search materials...")}" autocomplete="off" />
+                    <select id="material-select" class="form-control" size="5" onchange="applyMaterial()" style="display:none;">
+                    </select>
+                </td>
+                <td>{_("Quickly apply saved material settings to thickness, burn, and spacing fields")}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="panel-footer">
+        <a href="/Materials" target="_blank">{_("Manage Materials")}</a>
+    </div>
+</div>
+        
         """]
         groupid = 0
         for group in box.argparser._action_groups[3:] + box.argparser._action_groups[:3]:
@@ -347,9 +351,9 @@ class BServer:
 <p>
     <button name="render" value="1" class="primary" formtarget="_blank">{_("Generate")}</button>
     <button name="render" value="2" class="secondary" formtarget="_self">{_("Download")}</button>
-    <button name="render" value="0" class="tertiary" formtarget="_self">{_("Save to URL")}</button>
-    <button type="button" class="tertiary" onclick="saveToLocal()">{_("Save to Local")}</button>
-    <button name="render" class="tertiary" value="3" formtarget="_blank">{_("QR Code")}</button>
+    <button name="render" value="0" class="accent grey" formtarget="_self">{_("Save to URL")}</button>
+    <button type="button" class="accent grey" onclick="saveToLocal()">{_("Save to Local")}</button>
+    <button name="render" class="accent grey" value="3" formtarget="_blank">{_("QR Code")}</button>
 </p>
 </form>
 
@@ -388,6 +392,7 @@ class BServer:
 <img style="width:100%;" src="{self.static_url}/samples/{box.__class__.__name__}.jpg" onerror="this.parentElement.innerHTML = '{no_img_msg}';" alt="Picture of box.">
 </div>
 </div>
+{self.genPagePartFooter(lang)}
 </div>
 <div id="preview">
   <div id="preview_buttons">
@@ -474,6 +479,8 @@ class BServer:
 <div class="clear"></div>
 <hr>
 </div>
+
+{self.genPagePartFooter(lang)}
 </div>
 </body>
 </html>
@@ -541,15 +548,11 @@ class BServer:
 
         return f"""
 <h1><a href="./{langparam}">{_("Boxes.py")}</a></h1>
-<p>{_("Create boxes and more with a laser cutter!")}</p>
-<p>
-{_('''
-        <a href="https://hackaday.io/project/10649-boxespy">Boxes.py</a> is an <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">Open Source</a> box generator written in <a href="https://www.python.org/">Python</a>. It features both finished parametrized generators as well as a Python API for writing your own. It features finger and (flat) dovetail joints, flex cuts, holes and slots for screws, hinges, gears, pulleys and much more.''')}
-</p>
+
 </div>
 
 <div style="width: 25%; float: left;">
-<img alt="self-Logo" src="{self.static_url}/boxes-logo.svg" width="250">
+<img alt="self-Logo" src="{self.static_url}/boxes-logo.svg" width="100">
 </div>
 
 <div>
@@ -568,16 +571,12 @@ class BServer:
     def genLinks(self, lang, preview=False):
         _ = lang.gettext
         links = [
+                    ("/Home", _("Home")),
+                    ("/Gallery", _("Templates")),
                  ("/Makes", _("Makes")),
                  ("/Materials", _("Materials")),
-                 ("https://florianfesti.github.io/boxes/html/usermanual.html", _("Help")),
-                 ("https://hackaday.io/project/10649-boxespy", _("Home Page")),
-                 ("https://florianfesti.github.io/boxes/html/index.html", _("Documentation")),
-                 ("https://github.com/florianfesti/boxes", _("Sources"))]
-        if self.legal_url:
-            links.append((self.legal_url, _("Legal")))
-        links.append(("https://florianfesti.github.io/boxes/html/give_back.html", _("Give Back")))
-
+                    ("/Settings", _("Settings")),
+                 ("https://florianfesti.github.io/boxes/html/usermanual.html", _("Help")),]
         result = [f'  <li><a href="{url}" target="_blank" rel="noopener">{txt}</a></li>\n' for url, txt in links]
 
         if preview:
@@ -585,6 +584,24 @@ class BServer:
 
         result.append(f'  <li class="right">{self.genHTMLLanguageSelection(lang)}  </li>\n')
         return "".join(result)
+    
+    def genPagePartFooter(self, lang) -> str:
+        _ = lang.gettext
+        return f"""
+<div class="page-footer">
+<p>{_("Create boxes and more with a laser cutter!")}</p>
+{_('''
+        <a href="https://hackaday.io/project/10649-boxespy">Boxes.py</a> is an <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">Open Source</a> box generator written in <a href="https://www.python.org/">Python</a>. It features both finished parametrized generators as well as a Python API for writing your own. It features finger and (flat) dovetail joints, flex cuts, holes and slots for screws, hinges, gears, pulleys and much more.''')}
+</p>
+    <p>
+        <a href="https://hackaday.io/project/10649-boxespy" target="_blank" rel="noopener">Project Home</a> | 
+        <a href="https  ://github.com/florianfesti/boxes" target="_blank" rel="noopener">GitHub</a> | 
+        <a href="https://florianfesti.github.io/boxes/html/index.html" target="_blank" rel="noopener">Documentation</a> |
+       <a href="https://florianfesti.github.io/boxes/html/give_back.html" target="_blank" rel="noopener">Give Back</a>
+
+    </p>
+</div>
+"""
 
     def genPageError(self, name, e, lang) -> list[bytes]:
         """Generates a error page."""
@@ -718,9 +735,11 @@ class BServer:
                 # Always show gallery item with image, use fallback if thumbnail doesn't exist
                 result.append(f"""  <span class="gallery" id="search_id_{name}"><a title="{_(name)} - {html.escape(_(box.__doc__))}" href="{href}"><img alt="{alt}" src="{thumbnail}" onerror="this.onerror=null; this.src='{fallback_img}';"><br>{_(name)} {flag_pill}</a></span>\n""")
 
-        result.append(f"""
+        result.append(f"""{self.genPagePartFooter(lang)}
 </div><div style="width: 5%; float: left;"></div>
         <div class="clear"></div><hr></div>
+
+
 </body>
 </html>
 """
@@ -756,11 +775,17 @@ class BServer:
         if not name or name == "Gallery":
             return self.serveGallery(environ, start_response, lang)
 
+        if name == "Home":
+            return serveHome(self, environ, start_response, lang)
+
         if name == "Makes":
             return serveMakes(self, environ, start_response, lang)
 
         if name == "Materials":
             return serveMaterials(self, environ, start_response, lang)
+
+        if name == "Settings":
+            return serveSettings(self, environ, start_response, lang)
 
         box_cls = self.boxes.get(name, None)
         if not box_cls:

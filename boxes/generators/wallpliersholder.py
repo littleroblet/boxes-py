@@ -19,6 +19,7 @@ from boxes.walledges import _WallMountedBox
 
 class WallPliersHolder(_WallMountedBox):
     """Bar to hang pliers on"""
+    ui_group = "WallSystem"
 
     def __init__(self) -> None:
         super().__init__()

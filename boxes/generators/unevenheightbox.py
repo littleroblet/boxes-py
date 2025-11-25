@@ -19,7 +19,9 @@ from boxes import *
 class UnevenHeightBox(Boxes):
     """Box with different height in each corner"""
 
-    ui_group = "Box"
+    ui_group = "Special"
+    tags = ["uneven height", "lided"]
+    label = "Uneven Height Box"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

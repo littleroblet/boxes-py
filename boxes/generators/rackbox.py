@@ -19,7 +19,11 @@ from boxes import *
 class RackBox(Boxes):
     """Closed box with screw on top and mounting holes"""
 
-    ui_group = "Box"
+    ui_group = "Special"
+    description = """Box with screw-on lid held by triangular tabs. The lid can be
+mounted to a wall or panel using screw holes in the sides."""
+    tags = ["screw-on lid", "lided", "mountable"]
+    label = "Rack Box"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

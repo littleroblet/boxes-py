@@ -19,7 +19,7 @@ from boxes import *
 class AngledBox(Boxes):
     """Box with both ends cornered"""
 
-    ui_group = "Box"
+    ui_group = "Special"
     description = """Box with angled sides and cornered top and bottom."""
     tags = ["fancy", "angled", "lided"]
     created_date = "2017-01-09"

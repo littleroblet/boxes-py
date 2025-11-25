@@ -46,7 +46,9 @@ class SlotEdge(edges.Edge):
 class RegularStarBox(Boxes):
     """Regular polygon boxes that form a star when closed"""
 
-    ui_group = "Box"
+    ui_group = "Special"
+    tags = ["regular polygon", "star", "lided"]
+    label = "Regular Star Box"
 
 
     description = """![Open box](static/samples/RegularStarBox-2.jpg)"""

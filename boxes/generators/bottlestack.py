@@ -26,7 +26,9 @@ Without the "double" option the stand is a bit narrower.
 ![Empty stack](static/samples/BottleStack-2.jpg)
 """
 
-    ui_group = "Misc"
+    ui_group = "Organisation"
+    tags = ["organisation", "bottle", "bottlestack"]
+    label = "Bottle Stack"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

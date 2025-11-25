@@ -19,7 +19,9 @@ from boxes import *
 class OpenBox(Boxes):
     """Box with top and front open"""
 
-    ui_group = "Box"
+    ui_group = "Basic"
+    tags = ["basic", "box", "open"]
+    label = "Open Box"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

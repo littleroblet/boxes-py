@@ -29,7 +29,9 @@ For plywood this method works well with a very stiff press fit. Aim for needing 
 
 """
 
-    ui_group = "Misc"
+    ui_group = "Part"
+    tags = ["part", "joint", "panel"]
+    label = "Joint Panel"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

@@ -86,7 +86,9 @@ for canned tomatoes:
 """
 
 
-    ui_group = "Misc"
+    ui_group = "Organisation"
+    tags = ["organisation", "storage", "can_storage"]
+    label = "Can Storage"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

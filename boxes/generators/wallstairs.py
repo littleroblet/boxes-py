@@ -18,6 +18,9 @@ from boxes.walledges import _WallMountedBox
 
 class WallStairs(_WallMountedBox):
     """Platforms in different heights e.g. for screw drivers"""
+    ui_group = "WallSystem"
+    tags = ["wall", "stairs", "part"]
+    label = "Wall Stairs"
 
     description = """You are supposed to add holes or slots to the stair tops yourself using Inkscape or another vector drawing or CAD program.
 

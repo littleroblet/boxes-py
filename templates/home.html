@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Boxes.py{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+    <div style="text-align: center; margin-bottom: 60px;">
+        <h1 style="font-size: 48px; margin-bottom: 20px;">Welcome to Boxes.py</h1>
+        <p style="font-size: 20px; color: #666;">Create boxes and more with a laser cutter!</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 60px;">
+        <div style="padding: 30px; border: 1px solid #e0e0e0; border-radius: 8px; background: #f8f9fa;">
+            <h2 style="margin-top: 0;">Getting Started</h2>
+            <p>Explore hundreds of parametric box designs ready to customize and cut on your laser cutter.</p>
+            <a href="./Gallery{% if language %}?language={{ language }}{% endif %}" style="color: #4CAF50; text-decoration: none; font-weight: 600;">Browse Templates →</a>
+        </div>
+
+        <div style="padding: 30px; border: 1px solid #e0e0e0; border-radius: 8px; background: #f8f9fa;">
+            <h2 style="margin-top: 0;">Your Projects</h2>
+            <p>Save and manage your box configurations for quick access and reuse.</p>
+            <a href="./Makes{% if language %}?language={{ language }}{% endif %}" style="color: #4CAF50; text-decoration: none; font-weight: 600;">View Makes →</a>
+        </div>
+
+        <div style="padding: 30px; border: 1px solid #e0e0e0; border-radius: 8px; background: #f8f9fa;">
+            <h2 style="margin-top: 0;">Material Library</h2>
+            <p>Create a library of your materials with thickness, burn, and spacing settings.</p>
+            <a href="./Materials{% if language %}?language={{ language }}{% endif %}" style="color: #4CAF50; text-decoration: none; font-weight: 600;">Manage Materials →</a>
+        </div>
+    </div>
+
+    <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 8px;">
+        <h2>About Boxes.py</h2>
+        <p style="max-width: 800px; margin: 20px auto; line-height: 1.6;">
+            Boxes.py is an Open Source box generator written in Python. It features both finished parametrized 
+            generators as well as a Python API for writing your own. It features finger and (flat) dovetail joints, 
+            flex cuts, holes and slots for screws, hinges, gears, pulleys and much more.
+        </p>
+        <div style="margin-top: 30px;">
+            <a href="https://florianfesti.github.io/boxes/html/index.html" target="_blank" rel="noopener" 
+               style="display: inline-block; padding: 12px 24px; background: #4CAF50; color: white; text-decoration: none; border-radius: 4px; margin: 0 10px;">
+                Documentation
+            </a>
+            <a href="https://github.com/florianfesti/boxes" target="_blank" rel="noopener" 
+               style="display: inline-block; padding: 12px 24px; background: #333; color: white; text-decoration: none; border-radius: 4px; margin: 0 10px;">
+                View on GitHub
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

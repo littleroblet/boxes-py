@@ -19,8 +19,11 @@ from boxes import *
 class ElectronicsBox(Boxes):
     """Closed box with screw on top and mounting holes"""
 
-    ui_group = "Box"
-
+    ui_group = "Electronics"
+    tags = ["electronics", "box", "screw", "mounting"]
+    label = "Electronics Box"
+    description = """Box with screw on lid and mounting holes for electronics projects.
+"""
     def __init__(self) -> None:
         Boxes.__init__(self)
         self.addSettingsArgs(edges.FingerJointSettings)

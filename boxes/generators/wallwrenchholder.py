@@ -44,6 +44,10 @@ class SlottedEdge(edges.Edge):
 
 class WallWrenchHolder(_WallMountedBox):
     """Hold a set of wrenches at a wall"""
+    ui_group = "WallSystem"
+    tags = ["wrench", "holder", "part", "wall"]
+    label = "Wall Wrench Holder"
+    
 
 
     def __init__(self) -> None:
