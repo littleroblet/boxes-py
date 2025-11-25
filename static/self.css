@@ -1427,6 +1427,10 @@ body.dark-mode .panel-header h4 {
     color: #E0E0E0;
 }
 
+body.dark-mode h1 {
+    color: #81C784;
+}
+
 body.dark-mode h2,
 body.dark-mode h3,
 body.dark-mode h4 {
@@ -1471,3 +1475,70 @@ body.dark-mode .feature-box h3 {
 body.dark-mode .feature-box a {
     color: #81C784;
 }
+
+/* Grid Designer */
+.grid-designer-wrapper {
+    display: block;
+}
+
+.grid-designer-container {
+    margin: 10px 0;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.grid-designer-palette {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.grid-palette-btn {
+    padding: 10px 15px;
+    border: 3px solid transparent;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    transition: border-color 0.2s;
+}
+
+.grid-palette-btn:hover {
+    opacity: 0.9;
+}
+
+.grid-designer-grid {
+    display: grid;
+    gap: 2px;
+    background: #ddd;
+    padding: 2px;
+    border-radius: 4px;
+    width: fit-content;
+}
+
+.grid-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 2px;
+    transition: opacity 0.1s;
+}
+
+.grid-cell:hover {
+    opacity: 0.8;
+}
+
+body.dark-mode .grid-designer-container {
+    background: #2d2d2d;
+}
+
+body.dark-mode .grid-designer-grid {
+    background: #444;
+}
+

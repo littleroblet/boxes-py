@@ -239,13 +239,20 @@ class BServer:
         default = defaults.get(name, None)
         row = """<tr><td id="%s"><label for="%s">%s</label></td><td>%%s</td><td id="%s">%s</td></tr>\n""" % \
               (name + "_id", name, _(viewname), name + "_description", "" if not a.help else markdown.markdown(_(a.help)))
+        
+        # Check if this argument has designer metadata
+        designer_data = ""
+        if hasattr(a, 'designer') and a.designer:
+            designer_json = json.dumps(a.designer)
+            designer_data = f' data-designer=\'{designer_json}\''
+        
         if (isinstance(a, argparse._StoreAction) and
                 hasattr(a.type, "html")):
             input = a.type.html(name, default or a.default, _)
         elif a.type == str and "\n" in a.default:
             val = (default or a.default).split("\n")
-            input = """<textarea name="%s" id="%s" aria-labeledby="%s %s" cols="%s" rows="%s">%s</textarea>""" % \
-                    (name, name, name + "_id", name + "_description", max(len(l) for l in val) + 10, len(val) + 1, default or a.default)
+            input = """<textarea name="%s" id="%s" aria-labeledby="%s %s" cols="%s" rows="%s"%s>%s</textarea>""" % \
+                    (name, name, name + "_id", name + "_description", max(len(l) for l in val) + 10, len(val) + 1, designer_data, default or a.default)
         elif a.choices:
             options = "\n".join(
                 """    <option value="%s"%s>%s</option>""" %
@@ -284,6 +291,11 @@ class BServer:
     {self.genHTMLJS()}
 </head>
 <body onload="initArgsPage({len(box.argparser._action_groups) - 3})">
+
+<script>
+// Inject templates data if available
+window.generatorTemplates = {json.dumps(getattr(box, 'templates', []))};
+</script>
 
 <div class="argumentcontainer">
 <div style="float: left;">
@@ -593,7 +605,7 @@ class BServer:
         _ = lang.gettext
         links = [
                     ("/Home", _("Home")),
-                    ("/Gallery", _("Templates")),
+                    ("/Gallery", _("Gallery")),
                  ("/Makes", _("Makes")),
                  ("/Materials", _("Materials")),
                     ("/Settings", _("Settings")),
