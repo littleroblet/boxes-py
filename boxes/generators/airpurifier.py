@@ -20,7 +20,7 @@ class AirPurifier(Boxes):
     """Housing for the Nukit Open Air Purifier"""
 
     ui_group = "Electronics"
-    tags = ["electronics", "airpurifier", "nukit"]
+    tags = ["airpurifier", "nukit"]
     label = "Air Purifier"
     
 

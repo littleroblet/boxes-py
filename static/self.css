@@ -260,6 +260,49 @@ textarea {
 
 }
 
+/* Link Styles */
+
+a.primary {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+a.primary:hover {
+    color: #388E3C;
+}
+
+a.secondary {
+    color: #FF6600;
+    font-weight: bold;
+}
+
+a.secondary:hover {
+    color: #E65500;
+}
+
+a.accent {
+    color: #333;
+    font-weight: bold;
+}
+
+a.accent.green:hover {
+    color: #4CAF50;
+}
+
+a.accent.grey:hover {
+    color: #777;
+}
+
+a.accent.lightgrey:hover {
+    color: #999;
+}
+
+a.accent.red:hover {
+    color: #d9534f;
+}
+
+
+
 /* Button Styles */
 button.primary {
     background-color: #ABC837;
@@ -824,6 +867,16 @@ button.small {
     align-items: center;
 }
 
+.card-header button.favorite {
+    background: none;
+    border: none;
+    font-size: 20px;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    cursor: pointer;
+}
+
 /* Card Image */
 .card-image {
     width: 100%;
@@ -1134,3 +1187,287 @@ button.small {
     color: rgba(255, 255, 255, 0.9);
 }
 
+/* ==========================================================================
+   Jumbotron/Hero Components - Large featured content blocks
+   ========================================================================== */
+
+.jumbotron {
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 40px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.jumbotron.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.jumbotron.success {
+    background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%);
+    color: white;
+    border: none;
+}
+
+.jumbotron.info {
+    background: linear-gradient(135deg, #2196F3 0%, #1976d2 100%);
+    color: white;
+    border: none;
+}
+
+.jumbotron.flat {
+    background-color: transparent;
+    border: none;
+}
+
+.jumbotron-title {
+    font-size: 48px;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    line-height: 1.2;
+}
+
+.jumbotron-subtitle {
+    font-size: 20px;
+    margin: 0 0 30px 0;
+    opacity: 0.9;
+}
+
+.jumbotron-content {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.jumbotron-actions {
+    margin-top: 30px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.jumbotron-link {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.jumbotron-link:hover {
+    background: #45A049;
+}
+
+.jumbotron-link.secondary {
+    background: #333;
+}
+
+.jumbotron-link.secondary:hover {
+    background: #555;
+}
+
+/* Feature Box - Alternative to card for landing pages */
+.feature-box {
+    padding: 30px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.feature-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.feature-box h2,
+.feature-box h3 {
+    margin-top: 0;
+    font-size: 24px;
+}
+
+.feature-box p {
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.feature-box a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.feature-box a:hover {
+    text-decoration: underline;
+}
+
+/* Feature Grid */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 60px;
+}
+
+
+/* ===== Theme: Dark Mode ===== */
+body.dark-mode {
+    background-color: #121212;
+    color: #E0E0E0;
+}
+
+body.dark-mode .container,
+body.dark-mode .argumentcontainer {
+    background-color: #1E1E1E;
+    box-shadow: 0 0 5px 0 #666;
+}
+
+body.dark-mode .modebutton {
+    float: left;
+    border: none;
+    outline: none;
+    padding: 10px 16px;
+    margin-right: 10px;
+    text-align : center;
+    border-radius: 10px;
+    font-size: 17px;
+    width: 25%;
+    background-color: #333333;
+}
+
+body.dark-mode .linkbar ul li a {
+    color: #81C784;
+    margin-right: 10px;
+}
+
+body.dark-mode .modeactive {
+    background-color: #555555;
+
+}
+
+
+body.dark-mode .main-content {
+    background-color: #1E1E1E;
+    color: #E0E0E0;
+}
+
+body.dark-mode .topnav {
+    background-color: #2D2D2D;
+}
+
+body.dark-mode .topnav-menu a {
+    color: #E0E0E0;
+}
+
+body.dark-mode .topnav-menu a:hover {
+    background-color: #3D3D3D;
+}
+
+body.dark-mode .card {
+    background-color: #2D2D2D;
+    border-color: #444;
+    color: #E0E0E0;
+}
+
+body.dark-mode .card-header,
+body.dark-mode .card-footer {
+    background-color: #252525;
+    border-color: #444;
+}
+
+body.dark-mode .card-title,
+body.dark-mode .card-header-title {
+    color: #E0E0E0;
+}
+
+body.dark-mode .card-text,
+body.dark-mode .card-meta-value {
+    color: #B0B0B0;
+}
+
+body.dark-mode .modal-content {
+    background-color: #2D2D2D;
+    border-color: #444;
+    color: #E0E0E0;
+}
+
+body.dark-mode .modal-header {
+    color: #E0E0E0;
+}
+
+body.dark-mode .modal-body label {
+    color: #E0E0E0;
+}
+
+body.dark-mode .notification-message {
+    color: #888;
+}
+
+body.dark-mode .modal-body input[type="text"],
+body.dark-mode .form-control {
+    background-color: #1E1E1E;
+    color: #E0E0E0;
+    border-color: #444;
+}
+
+body.dark-mode .panel {
+    background-color: #2D2D2D;
+    border-color: #444;
+}
+
+body.dark-mode .panel-header h3,
+body.dark-mode .panel-header h4 {
+    color: #E0E0E0;
+}
+
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4 {
+    color: #E0E0E0;
+}
+
+body.dark-mode a {
+    color: #81C784;
+}
+
+body.dark-mode .page-footer {
+    border-color: #444;
+    color: #B0B0B0;
+}
+
+body.dark-mode .footer {
+    background-color: #1E1E1E;
+    border-color: #444;
+}
+
+body.dark-mode .jumbotron {
+    background-color: #2D2D2D;
+    border-color: #444;
+    color: #E0E0E0;
+}
+
+body.dark-mode .jumbotron-title {
+    color: #E0E0E0;
+}
+
+body.dark-mode .feature-box {
+    background-color: #2D2D2D;
+    border-color: #444;
+    color: #E0E0E0;
+}
+
+body.dark-mode .feature-box h2,
+body.dark-mode .feature-box h3 {
+    color: #E0E0E0;
+}
+
+body.dark-mode .feature-box a {
+    color: #81C784;
+}

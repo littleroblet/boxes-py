@@ -23,6 +23,8 @@ class Castle(Boxes):
 with towers and gates and walls that can be attached in multiple configurations."""
     ui_group = "Display"
     ui_flag = "Experimental"
+    tags = ["castle", "tower"]
+    label = "Castle tower display"
 
 
     def __init__(self) -> None:

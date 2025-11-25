@@ -27,7 +27,7 @@ Without the "double" option the stand is a bit narrower.
 """
 
     ui_group = "Organisation"
-    tags = ["organisation", "bottle", "bottlestack"]
+    tags = ["bottle", "bottlestack"]
     label = "Bottle Stack"
 
     def __init__(self) -> None:

@@ -62,7 +62,7 @@ class FingerHoleEdge(edges.BaseEdge):
 class CardBox(Boxes):
     """Box for storage of playing cards, with versatile options"""
     ui_group = "Games"
-    tags = ["games", "boardgame", "cardbox"]
+    tags = ["boardgame", "cards"]
     label = "Card Box"
 
     description = """

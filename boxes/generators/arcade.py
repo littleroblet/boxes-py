@@ -20,6 +20,10 @@ class Arcade(Boxes):
     """Desktop Arcade Machine"""
 
     ui_group = "Electronics"
+    tags = ["arcade", "console"]
+    label = "Desktop Arcade Machine"
+    description = """A box to house a small desktop arcade machine with angled screen and keyboard area.
+    """
 
     def __init__(self) -> None:
         Boxes.__init__(self)

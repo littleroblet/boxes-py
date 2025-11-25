@@ -20,7 +20,7 @@ class ClosedBox(Boxes):
     """Fully closed box"""
 
     ui_group = "Basic"
-    tags = ["basic", "box", "closed"]
+    tags = ["simple"]
     label = "Closed Box"
 
     description = """This box is more of a building block than a finished item.

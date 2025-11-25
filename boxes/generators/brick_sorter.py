@@ -46,6 +46,8 @@ In Use:
 """
 
     ui_group = "Organisation"
+    tags = ["brick", "sorter"]
+    label = "Brick Sorter"
 
     # level name, size of the holes in mm, and the thickness of the grid
     sieve_sizes = OrderedDict(

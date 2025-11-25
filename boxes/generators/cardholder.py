@@ -20,7 +20,7 @@ class CardHolder(Boxes):
     """Shelf for holding (multiple) piles of playing cards / notes"""
 
     ui_group = "Games"
-    tags = ["games", "boardgame", "cardholder"]
+    tags = ["boardgame", "card"]
     label = "Card Holder"
     description = """This is a shelf for holding multiple piles of playing cards or notes. The piles are slightly angled backwards so that the cards don't fall out easily.
 """

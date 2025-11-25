@@ -25,6 +25,8 @@ A simple round clock for mounting a classical clock mechanism behind it, with th
 ![back](static/samples/Clock-2.jpg)
 ![side](static/samples/Clock-3.jpg)
 """
+    tags = ["clock"]
+    label = "Clock"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

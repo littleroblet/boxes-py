@@ -101,6 +101,10 @@ function initArgsPage(num_hide = null) {
     for (let el of i) {
 	el.addEventListener("change", refreshPreview);
     }
+    
+    // Apply defaults before refreshing preview
+    applyDefaults();
+    
     refreshPreview();
     document.getElementById("preview_chk").addEventListener("change", togglePreview);
     
@@ -458,7 +462,26 @@ function addCallbacks() {
 
 document.addEventListener('DOMContentLoaded', function() {
     addCallbacks();
+    loadDarkModePreference();
+    
+    // Initialize home page if on home
+    if (document.getElementById('favorites-container')) {
+        initHomePage();
+    }
+    
+    // Initialize tag filter if on Gallery/Menu page
+    if (window.allGeneratorTags) {
+        initTagFilter();
+    }
 }, false);
+
+// Load dark mode preference from localStorage on page load
+function loadDarkModePreference() {
+    const isDarkMode = localStorage.getItem('boxes_dark_mode') === 'true';
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+    }
+}
 
 function collapseAll() {
     const h = document.getElementsByClassName("toggle");
@@ -504,6 +527,80 @@ function filterSearchItems() {
     } else {
         expandAll();
         showOnly(search.value)
+    }
+}
+
+/*** Tag Filtering **************************************/
+
+function initTagFilter() {
+    // Populate tag dropdown with all unique tags
+    const tagFilter = document.getElementById('tagFilter');
+    console.log('initTagFilter called, tagFilter:', tagFilter);
+    console.log('window.allGeneratorTags:', window.allGeneratorTags);
+    
+    if (!tagFilter || !window.allGeneratorTags) {
+        console.log('Exiting early - tagFilter or allGeneratorTags not found');
+        return;
+    }
+    
+    const allTags = new Set();
+    Object.values(window.allGeneratorTags).forEach(tags => {
+        tags.forEach(tag => allTags.add(tag));
+    });
+    
+    console.log('All tags collected:', allTags);
+    
+    const sortedTags = Array.from(allTags).sort();
+    sortedTags.forEach(tag => {
+        const option = document.createElement('option');
+        option.value = tag;
+        option.textContent = tag;
+        tagFilter.appendChild(option);
+    });
+    
+    console.log('Tag filter populated with', sortedTags.length, 'tags');
+}
+
+function filterByTag() {
+    const tagFilter = document.getElementById('tagFilter');
+    const selectedTag = tagFilter.value;
+    
+    console.log('filterByTag called with tag:', selectedTag);
+    
+    // Get all generator list items and gallery spans
+    const items = document.querySelectorAll('[id^="search_id_"]');
+    
+    console.log('Found', items.length, 'items to filter');
+    
+    items.forEach(item => {
+        if (!selectedTag) {
+            // Show all if no tag selected
+            item.style.display = item.tagName === 'LI' ? 'list-item' : 'inline-block';
+        } else {
+            // Check if item has the selected tag
+            const itemTags = item.getAttribute('data-tags');
+            if (itemTags && itemTags.split(',').includes(selectedTag)) {
+                item.style.display = item.tagName === 'LI' ? 'list-item' : 'inline-block';
+            } else {
+                item.style.display = 'none';
+            }
+        }
+    });
+    
+    // Also apply search filter if active
+    const search = document.getElementById('search');
+    if (search && search.value.length > 0) {
+        // Re-apply search on visible items
+        const searchText = search.value.toLowerCase();
+        items.forEach(item => {
+            const displayStyle = item.tagName === 'LI' ? 'list-item' : 'inline-block';
+            if (item.style.display === displayStyle) {
+                const text = item.textContent.toLowerCase();
+                if (!text.includes(searchText)) {
+                    item.style.display = 'none';
+                }
+            }
+        });
     }
 }
 
@@ -1226,6 +1323,8 @@ function saveMaterial(materialData) {
         thickness: parseFloat(materialData.thickness) || 0,
         burn: parseFloat(materialData.burn) || 0,
         spacing: materialData.spacing || '2',
+        inner_corner: materialData.inner_corner || 'loop',
+        tabs: parseFloat(materialData.tabs) || 0,
         createdAt: materialData.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString()
     };
@@ -1329,6 +1428,14 @@ function displayMaterials() {
                                     <span class="card-meta-label">Spacing:</span>
                                     <span class="card-meta-value">${material.spacing}</span>
                                 </div>
+                                <div class="card-meta-item">
+                                    <span class="card-meta-label">Inner Corner:</span>
+                                    <span class="card-meta-value">${material.inner_corner || 'loop'}</span>
+                                </div>
+                                <div class="card-meta-item">
+                                    <span class="card-meta-label">Tabs:</span>
+                                    <span class="card-meta-value">${material.tabs || 0}</span>
+                                </div>
                             </div>
                             ${material.notes ? `<div class="card-text" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0;"><strong>Notes:</strong><br>${material.notes}</div>` : ''}
                         </div>
@@ -1421,6 +1528,8 @@ function openMaterialModal(materialId = null) {
             document.getElementById('materialThickness').value = material.thickness;
             document.getElementById('materialBurn').value = material.burn;
             document.getElementById('materialSpacing').value = material.spacing;
+            document.getElementById('materialInnerCorner').value = material.inner_corner || 'loop';
+            document.getElementById('materialTabs').value = material.tabs || 0;
         }
     } else {
         // Add mode
@@ -1445,7 +1554,9 @@ function saveMaterialForm() {
         notes: document.getElementById('materialNotes').value.trim(),
         thickness: document.getElementById('materialThickness').value,
         burn: document.getElementById('materialBurn').value,
-        spacing: document.getElementById('materialSpacing').value
+        spacing: document.getElementById('materialSpacing').value,
+        inner_corner: document.getElementById('materialInnerCorner').value,
+        tabs: document.getElementById('materialTabs').value
     };
     
     // Validation
@@ -1768,6 +1879,8 @@ function applyMaterial() {
     const thicknessField = document.getElementById('thickness');
     const burnField = document.getElementById('burn');
     const spacingField = document.getElementById('spacing');
+    const innerCornerField = document.getElementById('inner_corner');
+    const tabsField = document.getElementById('tabs');
     
     if (thicknessField) {
         thicknessField.value = materialData.thickness;
@@ -1782,6 +1895,16 @@ function applyMaterial() {
     if (spacingField) {
         spacingField.value = materialData.spacing;
         spacingField.dispatchEvent(new Event('change'));
+    }
+    
+    if (innerCornerField) {
+        innerCornerField.value = materialData.inner_corner || 'loop';
+        innerCornerField.dispatchEvent(new Event('change'));
+    }
+    
+    if (tabsField) {
+        tabsField.value = materialData.tabs || 0;
+        tabsField.dispatchEvent(new Event('change'));
     }
     
     // Clear and hide dropdown
@@ -1802,3 +1925,279 @@ function applyMaterial() {
     }
 }
 
+// ===== Settings Page Functions =====
+
+// Get default settings from localStorage
+function getDefaults() {
+    const stored = localStorage.getItem('boxes_defaults');
+    if (stored) {
+        try {
+            return JSON.parse(stored);
+        } catch (e) {
+            console.error('Error parsing defaults:', e);
+        }
+    }
+    // Return default values
+    return {
+        format: 'svg',
+        reference: 100,
+        qr_code: false,
+        debug: false,
+        labels: false
+    };
+}
+
+// Save default settings to localStorage
+function saveDefaultsToStorage(defaults) {
+    localStorage.setItem('boxes_defaults', JSON.stringify(defaults));
+}
+
+// Open edit defaults modal and populate with current values
+function editDefaults() {
+    const defaults = getDefaults();
+    
+    // Populate form fields
+    document.getElementById('defaultFormat').value = defaults.format || 'svg';
+    document.getElementById('defaultReference').value = defaults.reference || 100;
+    document.getElementById('defaultQrCode').checked = defaults.qr_code || false;
+    document.getElementById('defaultDebug').checked = defaults.debug || false;
+    document.getElementById('defaultLabels').checked = defaults.labels || false;
+    
+    openModal('editDefaultsModal');
+}
+
+// Save defaults from form
+function saveDefaults() {
+    const defaults = {
+        format: document.getElementById('defaultFormat').value,
+        reference: parseFloat(document.getElementById('defaultReference').value) || 100,
+        qr_code: document.getElementById('defaultQrCode').checked,
+        debug: document.getElementById('defaultDebug').checked,
+        labels: document.getElementById('defaultLabels').checked
+    };
+    
+    try {
+        saveDefaultsToStorage(defaults);
+        showNotification('Defaults saved successfully!', 'success');
+        closeModal('editDefaultsModal');
+    } catch (e) {
+        showNotification('Error saving defaults: ' + e.message, 'error');
+    }
+}
+
+// Apply defaults to form fields on generator pages
+function applyDefaults() {
+    const defaults = getDefaults();
+    
+    // Only apply if URL doesn't have parameters (except language)
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasParams = Array.from(urlParams.keys()).some(key => key !== 'language');
+    
+    if (hasParams) {
+        // URL has parameters, don't override
+        return;
+    }
+    
+    // Apply format
+    const formatField = document.getElementById('format');
+    if (formatField && !formatField.value) {
+        formatField.value = defaults.format;
+    }
+    
+    // Apply reference
+    const referenceField = document.getElementById('reference');
+    if (referenceField && !referenceField.value) {
+        referenceField.value = defaults.reference;
+    }
+    
+    // Apply qr_code
+    const qrCodeField = document.getElementById('qr_code');
+    if (qrCodeField && qrCodeField.type === 'checkbox') {
+        qrCodeField.checked = defaults.qr_code;
+    }
+    
+    // Apply debug
+    const debugField = document.getElementById('debug');
+    if (debugField && debugField.type === 'checkbox') {
+        debugField.checked = defaults.debug;
+    }
+    
+    // Apply labels
+    const labelsField = document.getElementById('labels');
+    if (labelsField && labelsField.type === 'checkbox') {
+        labelsField.checked = defaults.labels;
+    }
+}
+
+// Toggle dark mode
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    localStorage.setItem('boxes_dark_mode', isDarkMode ? 'true' : 'false');
+}
+
+// Export user data to JSON file
+function exportUserData() {
+    const savedMakes = localStorage.getItem('boxes_saved_configs') || '{}';
+    const materials = localStorage.getItem('boxes_materials') || '{}';
+    const materialCategories = localStorage.getItem('boxes_material_categories') || '[]';
+    const makeProjects = localStorage.getItem('boxes_make_projects') || '[]';
+    const favoriteBoxes = localStorage.getItem('boxes_favorite_boxes') || '[]';
+    const darkMode = localStorage.getItem('boxes_dark_mode') || 'false';
+    const defaults = localStorage.getItem('boxes_defaults') || '{}';
+    
+    const data = {
+        savedMakes: JSON.parse(savedMakes),
+        materials: JSON.parse(materials),
+        materialCategories: JSON.parse(materialCategories),
+        makeProjects: JSON.parse(makeProjects),
+        favoriteBoxes: JSON.parse(favoriteBoxes),
+        darkMode: darkMode === 'true',
+        defaults: JSON.parse(defaults)
+    };  
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "boxes_user_data.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+// Trigger file input for import
+function triggerImportFile() {
+    const fileInput = document.getElementById('importFileInput');
+    if (fileInput) {
+        fileInput.click();
+    }
+}
+
+// Handle the imported file
+function handleImportFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!file.name.endsWith('.json')) {
+        showNotification('Please select a valid JSON file', 'error');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            let itemsImported = 0;
+
+            if (data.savedMakes) {
+                localStorage.setItem('boxes_saved_configs', JSON.stringify(data.savedMakes));
+                itemsImported++;
+            }
+            if (data.materials) {
+                localStorage.setItem('boxes_materials', JSON.stringify(data.materials));
+                itemsImported++;
+            }
+            if (data.materialCategories) {
+                localStorage.setItem('boxes_material_categories', JSON.stringify(data.materialCategories));
+                itemsImported++;
+            }
+            if (data.makeProjects) {
+                localStorage.setItem('boxes_make_projects', JSON.stringify(data.makeProjects));
+                itemsImported++;
+            }
+            if (data.favoriteBoxes) {
+                localStorage.setItem('boxes_favorite_boxes', JSON.stringify(data.favoriteBoxes));
+                itemsImported++;
+            }
+            if (typeof data.darkMode === 'boolean') {
+                localStorage.setItem('boxes_dark_mode', data.darkMode ? 'true' : 'false');
+                itemsImported++;
+            }
+            if (data.defaults) {
+                localStorage.setItem('boxes_defaults', JSON.stringify(data.defaults));
+                itemsImported++;
+            }
+            
+            if (itemsImported > 0) {
+                showNotification('User data imported successfully! Refresh the page to see changes.', 'success');
+                // Reset file input
+                event.target.value = '';
+            } else {
+                showNotification('No valid data found in the file', 'error');
+            }
+        } catch (error) {
+            console.error('Error importing user data:', error);
+            showNotification('Error importing data: Invalid JSON file', 'error');
+            event.target.value = '';
+        }
+    };
+    reader.readAsText(file);
+}
+
+// ===== Home Page - Favorite Generators Display =====
+
+function displayFavoriteGenerators() {
+    const favorites = loadFavorites();
+    const container = document.getElementById('favorites-container');
+    const noFavoritesMsg = document.getElementById('no-favorites');
+    
+    if (!container) return; // Not on home page
+    
+    if (favorites.length === 0) {
+        container.style.display = 'none';
+        noFavoritesMsg.style.display = 'block';
+        return;
+    }
+    
+    container.style.display = 'grid';
+    noFavoritesMsg.style.display = 'none';
+    
+    let html = '';
+    
+    favorites.forEach(name => {
+        const box = window.allBoxesData.find(b => b.name === name);
+        if (!box) return; // Skip if box not found
+        
+        const langParam = window.languageParam || '';
+        const staticUrl = window.staticUrl || 'static';
+        const thumbnailPath = box.thumbnail || `${staticUrl}/samples/${box.name}-thumb.jpg`;
+        const fallbackImg = `${staticUrl}/samples/no-image-thumb.jpg`;
+        
+        html += `
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-title">${escapeHtml(box.label)}</div>
+                    <button type="button" class="favorite active" onclick="toggleFavoriteOnHome('${escapeHtml(box.name)}')" title="Remove from favorites">★</button>
+                </div>
+                <div class="card-body">
+                    <div style="margin-bottom: 16px; text-align: center;">
+                        <img src="${thumbnailPath}" 
+                             onerror="this.onerror=null; this.src='${fallbackImg}';" 
+                             alt="${escapeHtml(box.label)}" 
+                             style="max-width: 200px; max-height: 200px; display: inline-block; border-radius: 4px;">
+                    </div>
+                    <p class="card-text">${escapeHtml(box.description)}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="./${box.name}${langParam}" class="primary" style="display: inline-block; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Create Box</a>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function toggleFavoriteOnHome(name) {
+    toggleFavorite(name);
+    // Refresh the display after toggle
+    setTimeout(() => {
+        displayFavoriteGenerators();
+    }, 100);
+}
+
+function initHomePage() {
+    console.log('Initializing Home page');
+    if (typeof window.allBoxesData !== 'undefined') {
+        displayFavoriteGenerators();
+    }
+}

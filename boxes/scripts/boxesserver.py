@@ -20,6 +20,7 @@ import gettext
 import glob
 import html
 import io
+import json
 import mimetypes
 import os.path
 import re
@@ -420,6 +421,13 @@ class BServer:
         if lang_name:
             langparam = "?language=" + lang_name
 
+        # Collect all unique tags from generators
+        all_tags = set()
+        for box_cls in self.boxes.values():
+            if hasattr(box_cls, 'tags'):
+                all_tags.update(box_cls.tags)
+        sorted_tags = sorted(all_tags)
+
         result = [f"""{self.genHTMLStart(lang)}
 <head>
     <title>{_("Boxes.py")}</title>
@@ -440,6 +448,15 @@ class BServer:
 <div class="menu" style="width: 100%">
 <img style="width: 200px;" id="sample-preview" src="{self.static_url}/nothing.png" alt="">
 """]
+        
+        # Add tag data for JavaScript
+        tag_data = {}
+        for name, box_cls in self.boxes.items():
+            if hasattr(box_cls, 'tags'):
+                tag_data[name] = box_cls.tags
+        result.append('<script>window.allGeneratorTags = ')
+        result.append(json.dumps(tag_data))
+        result.append(';</script>\n')
         for nr, group in enumerate(self.groups):
             result.append(f'''
 <h3 id="h-{nr}"
@@ -470,7 +487,11 @@ class BServer:
                         flag_class = 'beta'
                     flag_pill = f' <span class="pill-badge {flag_class}">{html.escape(ui_flag)}</span>'
                 
-                result.append(f"""     <li class="thumbnail" data-thumbnail="{self.static_url}/samples/{name}-thumb.jpg" id="search_id_{name}"><a href="{name}{langparam}">{_(name)}</a>{flag_pill}{docs}</li>\n""")
+                # Get tags for filtering
+                box_tags = getattr(box, 'tags', [])
+                tags_attr = f' data-tags="{",".join(box_tags)}"' if box_tags else ''
+                
+                result.append(f"""     <li class="thumbnail" data-thumbnail="{self.static_url}/samples/{name}-thumb.jpg" id="search_id_{name}"{tags_attr}><a href="{name}{langparam}">{_(name)}</a>{flag_pill}{docs}</li>\n""")
             result.append("   </ul>\n  </div>\n")
         result.append(f"""
 </div>
@@ -582,6 +603,9 @@ class BServer:
         if preview:
             result.append(f'    <li class="right">{_("Preview")} <input id="preview_chk" type="checkbox" checked="checked"> </li>\n')
 
+        # Add tag filter dropdown for Gallery/Menu pages
+        result.append(f'  <li class="right"><select id="tagFilter" onchange="filterByTag()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc;"><option value="">{_("All Tags")}</option></select></li>\n')
+        
         result.append(f'  <li class="right">{self.genHTMLLanguageSelection(lang)}  </li>\n')
         return "".join(result)
     
@@ -638,7 +662,7 @@ class BServer:
         if (not re.match(r"[a-zA-Z0-9_/-]+\.[a-zA-Z0-9]+", filename) or
                 not os.path.exists(path)):
             if re.match(r"samples/.*-thumb.jpg", filename):
-                path = os.path.join(self.staticdir, "nothing.png")
+                path = os.path.join(self.staticdir, "samples/no-image-thumb.jpg")
             else:
                 start_response("404 Not Found", [('Content-type', 'text/plain')])
                 return [b"Not found"]
@@ -710,6 +734,16 @@ class BServer:
 <span class="modebutton"><a href="Menu">{_("Menu")}</a></span>
 </div>
 """]
+        
+        # Add tag data for JavaScript
+        tag_data = {}
+        for name, box_cls in self.boxes.items():
+            if hasattr(box_cls, 'tags'):
+                tag_data[name] = box_cls.tags
+        result.append('<script>window.allGeneratorTags = ')
+        result.append(json.dumps(tag_data))
+        result.append(';</script>\n')
+        
         for nr, group in enumerate(self.groups):
             result.append(f"<h2>{_(group.title)}</h2>\n")
             for box in group.generators:
@@ -732,8 +766,12 @@ class BServer:
                         flag_class = 'beta'
                     flag_pill = f'<span class="pill-badge {flag_class}">{html.escape(ui_flag)}</span>'
                 
+                # Get tags for filtering
+                box_tags = getattr(box, 'tags', [])
+                tags_attr = f' data-tags="{",".join(box_tags)}"' if box_tags else ''
+                
                 # Always show gallery item with image, use fallback if thumbnail doesn't exist
-                result.append(f"""  <span class="gallery" id="search_id_{name}"><a title="{_(name)} - {html.escape(_(box.__doc__))}" href="{href}"><img alt="{alt}" src="{thumbnail}" onerror="this.onerror=null; this.src='{fallback_img}';"><br>{_(name)} {flag_pill}</a></span>\n""")
+                result.append(f"""  <span class="gallery" id="search_id_{name}"{tags_attr}><a title="{_(name)} - {html.escape(_(box.__doc__))}" href="{href}"><img alt="{alt}" src="{thumbnail}" onerror="this.onerror=null; this.src='{fallback_img}';"><br>{_(name)} {flag_pill}</a></span>\n""")
 
         result.append(f"""{self.genPagePartFooter(lang)}
 </div><div style="width: 5%; float: left;"></div>

@@ -7,16 +7,87 @@
     <h2>Settings</h2>
     <p>Configure your Boxes.py preferences and application settings.</p>
 
-    <div style="margin-top: 40px;">
-        <div style="padding: 30px; border: 1px solid #e0e0e0; border-radius: 8px; background: #f8f9fa;">
-            <h4>Settings Coming Soon</h4>
-            <p style="color: #666;">This page will allow you to configure various application preferences including:</p>
-            <ul style="color: #666; line-height: 1.8;">
-                <li>Default formats, qr_code and labels</li>
-                <li>Theme selection (light/dark mode)</li>
-                <li>and more...</li>
-            </ul>
+    <div class="card-grid"  > 
+        <div class="card" style="width: 300px;">
+            <div class="card-header">Theme</div>
+            <div class="card-body">
+                <p>Toggle between light and dark mode.</p>
+            <button class="primary" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+            </div>
+        </div>  
+        <div class="card" style="width: 300px;">
+            <div class="card-header">Default Settings</div>
+            <div class="card-body">
+                <p>Set defaults.</p>
+            <button class="primary" onclick="editDefaults()">Edit Defaults</button>
+            </div>
+        </div> 
+        <div class="card" style="width: 300px;">
+            <div class="card-header">Export User Data</div>
+            <div class="card-body">
+                <p>Export all your user data for backup including makes, materials, and settings.</p>
+            <button class="primary" onclick="exportUserData()">Export Data</button>
+            </div>
         </div>
+                <div class="card" style="width: 300px;">
+            <div class="card-header">Import User Data</div>
+            <div class="card-body">
+                <p>Import all your user data from a backup.</p>
+                <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="handleImportFile(event)">
+                <button class="primary" onclick="triggerImportFile()">Import Data</button>
+            </div>
+        </div>
+        </div>
+        
+</div>
+
+<!-- Edit Defaults Modal -->
+<div id="editDefaultsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close-modal" onclick="closeModal('editDefaultsModal')">&times;</span>
+            Edit Default Settings
+        </div>
+        <form id="defaultsForm" onsubmit="event.preventDefault(); saveDefaults();">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="defaultFormat">Format *</label>
+                    <select id="defaultFormat" class="form-control" required>
+                        <option value="svg">SVG</option>
+                        <option value="svg_Ponoko">SVG (Ponoko)</option>
+                        <option value="ps">PostScript</option>
+                        <option value="lbrn2">LightBurn (LBRN2)</option>
+                    </select>
+                    <small>Default output format for generated boxes</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="defaultReference">Reference (mm) *</label>
+                    <input type="number" id="defaultReference" class="form-control" step="0.1" min="0" value="100" placeholder="100" required>
+                    <small>Reference dimension in millimeters</small>
+                </div>
+                
+                <div class="form-group" style="display: flex; align-items: center; gap: 12px;">
+                    <input type="checkbox" id="defaultQrCode" style="width: auto; margin: 0;">
+                    <label for="defaultQrCode" style="margin: 0; cursor: pointer;">Include QR Code</label>
+                </div>
+                
+                <div class="form-group" style="display: flex; align-items: center; gap: 12px;">
+                    <input type="checkbox" id="defaultDebug" style="width: auto; margin: 0;">
+                    <label for="defaultDebug" style="margin: 0; cursor: pointer;">Enable Debug Mode</label>
+                </div>
+                
+                <div class="form-group" style="display: flex; align-items: center; gap: 12px;">
+                    <input type="checkbox" id="defaultLabels" style="width: auto; margin: 0;">
+                    <label for="defaultLabels" style="margin: 0; cursor: pointer;">Show Labels</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="accent lightgrey" onclick="closeModal('editDefaultsModal')">Cancel</button>
+                <button type="submit" class="primary">Save Defaults</button>
+            </div>
+        </form>
     </div>
 </div>
+
 {% endblock %}

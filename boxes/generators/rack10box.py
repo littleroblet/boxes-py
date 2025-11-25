@@ -20,7 +20,7 @@ class Rack10Box(Rack19Box):
     """Closed box with screw on top for mounting in a 10" rack."""
 
     ui_group = "Rack"
-    tags = ["rack", "10\"", "case", "box"]
+    tags = ["rack"]
     label = "10\" Rack Box"
     ui_flag = "Beta"
 

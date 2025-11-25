@@ -24,7 +24,7 @@ class CoffeeCapsuleHolder(Boxes):
     """
 
     ui_group = "Organisation"
-    tags = ["organisation", "coffee", "coffeecapsulesholder"]
+    tags = ["organisation", "coffee"]
     label = "Coffee Capsule Holder"
 
     description = """

@@ -21,7 +21,7 @@ class SBCMicroRack(Boxes):
 
     webinterface = True
     ui_group = "Rack"  
-    tags = ["rack", "box", "sbcmicrorack"]
+    tags = ["rack"]
     label = "SBC Micro Rack"
 
     def __init__(self) -> None:

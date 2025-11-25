@@ -20,7 +20,7 @@ class EuroRackSkiff(Boxes):
     """3U Height case with adjustable width and height and included rails"""
 
     ui_group = "Rack"
-    tags = ["eurorack", "skiff", "case", "rack"]
+    tags = ["eurorack", "rack"]
     label = "EuroRack Skiff"
 
     def __init__(self) -> None:

@@ -37,6 +37,8 @@ See also LBeam that can serve as compact BurnTest and FlexTest for testing flex 
 """
 
     ui_group = "Testing"
+    tags = ["test"]
+    label = "Burn Test"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

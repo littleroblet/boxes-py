@@ -34,7 +34,7 @@ pieces or as a single piece that continues at the back.
 
     ui_group = "Organisation"
 
-    tags = ["organisation", "tray", "compartmentbox"]
+    tags = ["organisation", "tray"]
     label = "Compartment Box"
 
     def __init__(self) -> None:

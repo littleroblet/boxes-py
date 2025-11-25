@@ -7,7 +7,7 @@ class Rack19HalfWidth(Boxes):
     """Half width 19inch rack unit for musical equipment."""
 
     ui_group = "Rack"
-    tags = ["rack", "19\"", "halfwidth", "case", "box"]
+    tags = ["rack"]
     label = "19\" Halfwidth Rack Box"
     ui_flag = "Beta"
 

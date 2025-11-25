@@ -46,7 +46,7 @@ class BinTray(Boxes):
     """A Type tray variant to be used up right with sloped walls in front"""
 
     ui_group = "Organisation"
-    tags = ["organisation", "tray", "bin"]
+    tags = ["tray", "bin"]
     label = "Bin Tray"
     description = """A tray to be used in a storage rack with slanted front walls.
 The front walls are slanted to give easy access to the contents of the tray.

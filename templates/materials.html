@@ -63,6 +63,22 @@
                 </div>
                 
                 <div class="form-group">
+                    <label for="materialInnerCorner">Inner Corner</label>
+                    <select id="materialInnerCorner" class="form-control">
+                        <option value="loop">loop</option>
+                        <option value="corner">corner</option>
+                        <option value="backarc">backarc</option>
+                    </select>
+                    <small>Corner style for inner corners</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="materialTabs">Tabs</label>
+                    <input type="number" id="materialTabs" class="form-control" step="0.1" value="0" placeholder="0">
+                    <small>Tab width for connecting parts</small>
+                </div>
+                
+                <div class="form-group">
                     <label for="materialNotes">Notes</label>
                     <textarea id="materialNotes" class="form-control" rows="3" placeholder="Machine settings, tips, etc."></textarea>
                 </div>

@@ -22,7 +22,7 @@ class RackBox(Boxes):
     ui_group = "Special"
     description = """Box with screw-on lid held by triangular tabs. The lid can be
 mounted to a wall or panel using screw holes in the sides."""
-    tags = ["screw-on lid", "lided", "mountable"]
+    tags = ["lided", "mountable"]
     label = "Rack Box"
 
     def __init__(self) -> None:

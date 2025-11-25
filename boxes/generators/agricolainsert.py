@@ -27,7 +27,7 @@ class AgricolaInsert(Boxes):
     """
 
     ui_group = "Games"
-    tags = ["games", "boardgame", "insert", "agricola"]
+    tags = ["boardgame", "insert"]
     label = "Agricola Insert"
     
     description = """

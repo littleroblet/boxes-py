@@ -20,7 +20,7 @@ class Rack19Box(Boxes):
     """Closed box with screw on top for mounting in a 19" rack."""
 
     ui_group = "Rack"
-    tags = ["rack", "19\"", "case", "box"]
+    tags = ["rack"]
     label = "19\" Rack Box"
     
     def __init__(self) -> None:
