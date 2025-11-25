@@ -102,6 +102,12 @@ function initArgsPage(num_hide = null) {
 	el.addEventListener("change", refreshPreview);
     }
     
+    // Initialize templates dropdown if templates exist
+    initTemplates();
+    
+    // Initialize grid designers for any fields with designer metadata
+    initGridDesigners();
+    
     // Apply defaults before refreshing preview
     applyDefaults();
     
@@ -2200,4 +2206,265 @@ function initHomePage() {
     if (typeof window.allBoxesData !== 'undefined') {
         displayFavoriteGenerators();
     }
+}
+
+/*** Grid Designer ****************************************/
+
+function initGridDesigners() {
+    const textareas = document.querySelectorAll('textarea[data-designer]');
+    textareas.forEach(textarea => {
+        try {
+            const designerData = JSON.parse(textarea.getAttribute('data-designer'));
+            if (designerData && designerData.type === 'grid') {
+                createGridDesigner(textarea, designerData);
+            }
+        } catch (e) {
+            console.error('Failed to parse designer data:', e);
+        }
+    });
+}
+
+function createGridDesigner(textarea, config) {
+    // Create a wrapper to hold both textarea and grid designer
+    const wrapper = document.createElement('div');
+    wrapper.className = 'grid-designer-wrapper';
+    textarea.parentNode.insertBefore(wrapper, textarea);
+    wrapper.appendChild(textarea);
+    
+    // Initially hide textarea
+    textarea.style.display = 'none';
+    
+    // Create toggle button
+    const toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.textContent = 'Switch to Text Mode';
+    toggleBtn.style.cssText = 'margin-bottom: 10px; padding: 8px 15px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;';
+    wrapper.appendChild(toggleBtn);
+    
+    // Create designer container
+    const container = document.createElement('div');
+    container.className = 'grid-designer-container';
+    wrapper.appendChild(container);
+    
+    let isGridMode = true;
+    
+    toggleBtn.addEventListener('click', () => {
+        isGridMode = !isGridMode;
+        if (isGridMode) {
+            textarea.style.display = 'none';
+            container.style.display = 'block';
+            toggleBtn.textContent = 'Switch to Text Mode';
+            // Sync grid from textarea when switching back
+            syncGridFromTextarea();
+        } else {
+            textarea.style.display = 'block';
+            container.style.display = 'none';
+            toggleBtn.textContent = 'Switch to Grid Mode';
+        }
+    });
+    
+    const palette = document.createElement('div');
+    palette.className = 'grid-designer-palette';
+    let selectedElement = config.elements[0];
+    config.elements.forEach((elem, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'grid-palette-btn';
+        btn.textContent = elem.label;
+        btn.style.background = elem.color;
+        btn.style.color = getBrightness(elem.color) > 128 ? '#000' : '#fff';
+        if (idx === 0) btn.style.borderColor = '#333';
+        btn.addEventListener('click', () => {
+            selectedElement = elem;
+            palette.querySelectorAll('button').forEach(b => b.style.borderColor = 'transparent');
+            btn.style.borderColor = '#333';
+        });
+        palette.appendChild(btn);
+    });
+    container.appendChild(palette);
+    const grid = document.createElement('div');
+    grid.className = 'grid-designer-grid';
+    grid.style.gridTemplateColumns = `repeat(${config.grid_x}, 40px)`;
+    grid.style.gridTemplateRows = `repeat(${config.grid_y}, 40px)`;
+    const gridState = parseLayoutToGrid(textarea.value, config.grid_y, config.grid_x, config.elements);
+    let isMouseDown = false;
+    for (let row = 0; row < config.grid_y; row++) {
+        for (let col = 0; col < config.grid_x; col++) {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+            const cellState = gridState[row][col];
+            cell.style.background = cellState.color;
+            cell.style.color = getBrightness(cellState.color) > 128 ? '#000' : '#fff';
+            cell.textContent = cellState.code;
+            cell.dataset.symbol = cellState.symbol;
+            cell.addEventListener('mousedown', () => { isMouseDown = true; paintCell(cell, selectedElement); updateTextarea(); });
+            cell.addEventListener('mouseenter', () => { if (isMouseDown) { paintCell(cell, selectedElement); updateTextarea(); } });
+            grid.appendChild(cell);
+        }
+    }
+    document.addEventListener('mouseup', () => { isMouseDown = false; });
+    container.appendChild(grid);
+    const clearBtn = document.createElement('button');
+    clearBtn.type = 'button';
+    clearBtn.textContent = 'Clear Grid';
+    clearBtn.style.cssText = 'margin-top: 10px; padding: 8px 15px; background: #d9534f; color: white; border: none; border-radius: 5px; cursor: pointer;';
+    clearBtn.addEventListener('click', () => {
+        grid.querySelectorAll('.grid-cell').forEach(cell => {
+            const emptyElem = config.elements.find(e => e.symbol === ' ') || config.elements[0];
+            paintCell(cell, emptyElem);
+        });
+        updateTextarea();
+    });
+    container.appendChild(clearBtn);
+    function paintCell(cell, element) {
+        cell.style.background = element.color;
+        cell.style.color = getBrightness(element.color) > 128 ? '#000' : '#fff';
+        cell.textContent = element.code;
+        cell.dataset.symbol = element.symbol;
+    }
+    function updateTextarea() {
+        const rows = [];
+        for (let row = 0; row < config.grid_y; row++) {
+            let rowStr = '';
+            for (let col = 0; col < config.grid_x; col++) {
+                const cell = grid.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                rowStr += cell.dataset.symbol;
+            }
+            rows.push(rowStr);
+        }
+        textarea.value = rows.join('\n');
+        textarea.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    
+    function syncGridFromTextarea() {
+        const gridState = parseLayoutToGrid(textarea.value, config.grid_y, config.grid_x, config.elements);
+        for (let row = 0; row < config.grid_y; row++) {
+            for (let col = 0; col < config.grid_x; col++) {
+                const cell = grid.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                const cellState = gridState[row][col];
+                paintCell(cell, cellState);
+            }
+        }
+    }
+}
+
+function parseLayoutToGrid(layoutStr, rows, cols, elements) {
+    const lines = layoutStr.split('\n');
+    const grid = [];
+    const emptyElem = elements.find(e => e.symbol === ' ') || elements[0];
+    for (let row = 0; row < rows; row++) {
+        grid[row] = [];
+        const line = lines[row] || '';
+        for (let col = 0; col < cols; col++) {
+            const char = line[col] || ' ';
+            const elem = elements.find(e => e.symbol === char) || emptyElem;
+            grid[row][col] = elem;
+        }
+    }
+    return grid;
+}
+
+function getBrightness(hexColor) {
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000;
+}
+
+/*** Templates ****************************************/
+
+function initTemplates() {
+    if (!window.generatorTemplates || window.generatorTemplates.length === 0) {
+        return; // No templates defined for this generator
+    }
+    
+    // Find the form
+    const form = document.querySelector('#arguments');
+    if (!form) return;
+    
+    // Create template selector panel
+    const panel = document.createElement('div');
+    panel.className = 'panel';
+    panel.style.cssText = 'margin-bottom: 20px;';
+    panel.innerHTML = `
+        <div class="panel-header">
+            <h4>Template Selection</h4>
+        </div>
+        <div class="panel-body">
+            <table role="presentation">
+                <tr>
+                    <td><label for="template-select">Load Template</label></td>
+                    <td>
+                        <select id="template-select" class="form-control">
+                            <option value="">-- Select a template --</option>
+                        </select>
+                    </td>
+                    <td id="template-description" style="font-style: italic; color: #666;"></td>
+                </tr>
+            </table>
+        </div>
+    `;
+    
+    // Insert panel at the top of the form (after material panel if it exists)
+    const materialPanel = form.querySelector('.panel');
+    if (materialPanel && materialPanel.nextSibling) {
+        form.insertBefore(panel, materialPanel.nextSibling);
+    } else {
+        form.insertBefore(panel, form.firstChild);
+    }
+    
+    // Populate template dropdown
+    const select = document.getElementById('template-select');
+    window.generatorTemplates.forEach((template, idx) => {
+        const option = document.createElement('option');
+        option.value = idx;
+        option.textContent = template.name;
+        select.appendChild(option);
+    });
+    
+    // Handle template selection
+    select.addEventListener('change', (e) => {
+        const templateIdx = e.target.value;
+        const descEl = document.getElementById('template-description');
+        
+        if (templateIdx === '') {
+            descEl.textContent = '';
+            return;
+        }
+        
+        const template = window.generatorTemplates[templateIdx];
+        descEl.textContent = template.description || '';
+        
+        // Load template args into form
+        loadTemplate(template);
+    });
+}
+
+function loadTemplate(template) {
+    if (!template || !template.args) return;
+    
+    // Apply each argument from the template
+    for (const [key, value] of Object.entries(template.args)) {
+        const input = document.getElementById(key);
+        if (!input) continue;
+        
+        if (input.tagName === 'TEXTAREA') {
+            input.value = value;
+            // Trigger grid designer sync if it exists
+            const event = new Event('change', { bubbles: true });
+            input.dispatchEvent(event);
+        } else if (input.type === 'checkbox') {
+            input.checked = value;
+        } else if (input.type === 'number' || input.type === 'text') {
+            input.value = value;
+        } else if (input.tagName === 'SELECT') {
+            input.value = value;
+        }
+    }
+    
+    // Trigger preview refresh
+    refreshPreview();
 }
