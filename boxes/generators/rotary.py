@@ -81,8 +81,10 @@ class RollerEdge2(edges.BaseEdge):
 class Rotary(Boxes):
     """Rotary Attachment for engraving cylindrical objects in a laser cutter"""
 
-    ui_group = "Unstable"
+    ui_group = "Part"
     ui_flag = "Experimental"
+    tags = ["part", "rotary", "laser", "cylinder", "engraving"]
+    label = "Rotary Laser Cutter Attachment"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

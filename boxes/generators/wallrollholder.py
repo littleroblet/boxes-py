@@ -19,10 +19,10 @@ from boxes.walledges import _WallMountedBox
 
 class WallRollHolder(_WallMountedBox):
     """Holder for kitchen rolls or other rolls"""
+    ui_group = "WallSystem"
 
     description = """Needs a dowel or pipe as axle."""
 
-    ui_group = "WallMounted"
 
     def __init__(self) -> None:
         super().__init__()

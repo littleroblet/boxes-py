@@ -45,7 +45,12 @@ class BinFrontSideEdge(BinFrontEdge):
 class BinTray(Boxes):
     """A Type tray variant to be used up right with sloped walls in front"""
 
-    ui_group = "Shelf"
+    ui_group = "Organisation"
+    tags = ["tray", "bin"]
+    label = "Bin Tray"
+    description = """A tray to be used in a storage rack with slanted front walls.
+The front walls are slanted to give easy access to the contents of the tray.
+"""
 
     def __init__(self) -> None:
         Boxes.__init__(self)

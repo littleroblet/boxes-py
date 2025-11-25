@@ -39,7 +39,7 @@ class CoinDisplay(Boxes):
     """A showcase for a single coin"""
 
     ui_group = "Display"
-    tags = ["coin", "showcase", "part"]
+    tags = ["coin", "showcase"]
     label = "Coin Display"
 
     def __init__(self) -> None:

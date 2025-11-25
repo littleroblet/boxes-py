@@ -24,7 +24,9 @@ class FilamentSpool(BayonetBox):
 Use small nails to properly align the pieces of the bayonet latch. Glue the parts of the bayonet latch before assembling the "axle". The inner parts go at the side and the outer parts at the inside of the axle.
 ![opened spool](static/samples/FilamentSpool-2.jpg)"""
 
-    ui_group = "Misc"
+    ui_group = "Organisation"
+    tags = ["organisation", "filament", "spool"]
+    label = "Filament Spool"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

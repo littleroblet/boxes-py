@@ -43,7 +43,7 @@ class DinRailEdge(edges.FingerHoleEdge):
 class DinRailBox(Boxes):
     """Box for DIN rail used in electrical junction boxes"""
 
-    ui_group = "Rail"
+    ui_group = "Electronics"
     tags = ["dinrail", "electrical", "part"]
     label = "DIN Rail Box"
     ui_flag = "Beta"

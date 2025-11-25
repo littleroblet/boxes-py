@@ -23,7 +23,7 @@ class ABox(Boxes):
     description = "This box is kept simple on purpose. If you need more features have a look at the UniversalBox."
 
     ui_group = "Basic"
-    tags = ["beginner" , "simple"]
+    tags = ["simple"]
     created_date = "2022-01-08"
     label = "Basic Box"
 

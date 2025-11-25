@@ -19,8 +19,10 @@ from boxes import *
 class Rack19Box(Boxes):
     """Closed box with screw on top for mounting in a 19" rack."""
 
-    ui_group = "Box"
-
+    ui_group = "Rack"
+    tags = ["rack"]
+    label = "19\" Rack Box"
+    
     def __init__(self) -> None:
         Boxes.__init__(self)
         self.addSettingsArgs(edges.FingerJointSettings, surroundingspaces=0.5)

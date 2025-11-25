@@ -8,6 +8,11 @@ from .keyboard import Keyboard
 class Atreus21(Boxes, Keyboard):
     """Generator for a split atreus keyboard."""
     ui_group = 'Electronics'
+    label = 'Atreus 21 Keyboard'
+    description = """A box for the popular Atreus 21 keyboard."""
+    tags = ["keyboard", "atreus"]
+
+
     btn_size = 15.6
     half_btn = btn_size / 2
     border = 6

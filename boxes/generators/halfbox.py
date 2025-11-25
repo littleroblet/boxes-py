@@ -33,8 +33,10 @@ class HalfBox(Boxes):
 and many more...
 
 """
-    ui_group = "Box"
-
+    ui_group = "Organisation"
+    tags = ["half box", "shelf", "clamping jig", "bookend"]
+    label = "Half Box"
+    
     def __init__(self) -> None:
         Boxes.__init__(self)
 

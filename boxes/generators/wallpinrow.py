@@ -39,6 +39,9 @@ class PinEdge(edges.BaseEdge):
 
 class WallPinRow(_WallMountedBox):
     """Outset and angled plate to mount stuff to"""
+    ui_group = "WallSystem"
+    tags = ["pin", "row", "part", "wall"]
+    label = "Wall Pin Row"
 
     def __init__(self) -> None:
         super().__init__()

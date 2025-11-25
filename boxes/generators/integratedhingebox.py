@@ -19,7 +19,11 @@ from boxes import *
 class IntegratedHingeBox(Boxes):
     """Box with lid and integrated hinge."""
 
-    ui_group = "Box"
+    ui_group = "Special"
+    tags = ["hinge", "lided"]
+    label = "Integrated Hinge Box"
+    description = """Box with lid and integrated hinge. The hinge is made from the same material as the box
+itself by cutting living hinges into it."""
 
     def __init__(self) -> None:
         Boxes.__init__(self)

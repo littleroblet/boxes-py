@@ -101,11 +101,16 @@ function initArgsPage(num_hide = null) {
     for (let el of i) {
 	el.addEventListener("change", refreshPreview);
     }
+    
+    // Apply defaults before refreshing preview
+    applyDefaults();
+    
     refreshPreview();
     document.getElementById("preview_chk").addEventListener("change", togglePreview);
     
     // Populate material selector if it exists
     populateMaterialSelector();
+    populateFavoriteButton();
 }
 
 /*** Preview ****************************************/
@@ -457,7 +462,26 @@ function addCallbacks() {
 
 document.addEventListener('DOMContentLoaded', function() {
     addCallbacks();
+    loadDarkModePreference();
+    
+    // Initialize home page if on home
+    if (document.getElementById('favorites-container')) {
+        initHomePage();
+    }
+    
+    // Initialize tag filter if on Gallery/Menu page
+    if (window.allGeneratorTags) {
+        initTagFilter();
+    }
 }, false);
+
+// Load dark mode preference from localStorage on page load
+function loadDarkModePreference() {
+    const isDarkMode = localStorage.getItem('boxes_dark_mode') === 'true';
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+    }
+}
 
 function collapseAll() {
     const h = document.getElementsByClassName("toggle");
@@ -503,6 +527,80 @@ function filterSearchItems() {
     } else {
         expandAll();
         showOnly(search.value)
+    }
+}
+
+/*** Tag Filtering **************************************/
+
+function initTagFilter() {
+    // Populate tag dropdown with all unique tags
+    const tagFilter = document.getElementById('tagFilter');
+    console.log('initTagFilter called, tagFilter:', tagFilter);
+    console.log('window.allGeneratorTags:', window.allGeneratorTags);
+    
+    if (!tagFilter || !window.allGeneratorTags) {
+        console.log('Exiting early - tagFilter or allGeneratorTags not found');
+        return;
+    }
+    
+    const allTags = new Set();
+    Object.values(window.allGeneratorTags).forEach(tags => {
+        tags.forEach(tag => allTags.add(tag));
+    });
+    
+    console.log('All tags collected:', allTags);
+    
+    const sortedTags = Array.from(allTags).sort();
+    sortedTags.forEach(tag => {
+        const option = document.createElement('option');
+        option.value = tag;
+        option.textContent = tag;
+        tagFilter.appendChild(option);
+    });
+    
+    console.log('Tag filter populated with', sortedTags.length, 'tags');
+}
+
+function filterByTag() {
+    const tagFilter = document.getElementById('tagFilter');
+    const selectedTag = tagFilter.value;
+    
+    console.log('filterByTag called with tag:', selectedTag);
+    
+    // Get all generator list items and gallery spans
+    const items = document.querySelectorAll('[id^="search_id_"]');
+    
+    console.log('Found', items.length, 'items to filter');
+    
+    items.forEach(item => {
+        if (!selectedTag) {
+            // Show all if no tag selected
+            item.style.display = item.tagName === 'LI' ? 'list-item' : 'inline-block';
+        } else {
+            // Check if item has the selected tag
+            const itemTags = item.getAttribute('data-tags');
+            if (itemTags && itemTags.split(',').includes(selectedTag)) {
+                item.style.display = item.tagName === 'LI' ? 'list-item' : 'inline-block';
+            } else {
+                item.style.display = 'none';
+            }
+        }
+    });
+    
+    // Also apply search filter if active
+    const search = document.getElementById('search');
+    if (search && search.value.length > 0) {
+        // Re-apply search on visible items
+        const searchText = search.value.toLowerCase();
+        items.forEach(item => {
+            const displayStyle = item.tagName === 'LI' ? 'list-item' : 'inline-block';
+            if (item.style.display === displayStyle) {
+                const text = item.textContent.toLowerCase();
+                if (!text.includes(searchText)) {
+                    item.style.display = 'none';
+                }
+            }
+        });
     }
 }
 
@@ -575,6 +673,7 @@ function confirmSaveToLocal() {
     savedConfigs[configName] = {
         url: window.tempConfigUrl,
         boxType: window.tempBoxType,
+        project: 'Uncategorized',
         timestamp: new Date().toISOString()
     };
     
@@ -651,6 +750,62 @@ function closeNotification() {
 
 /*** Saved Makes Management ******************************************/
 
+function getMakeProjects() {
+    const stored = localStorage.getItem('boxes_make_projects');
+    if (stored) {
+        const projects = JSON.parse(stored);
+        // Always ensure "Uncategorized" exists
+        if (!projects.includes('Uncategorized')) {
+            projects.unshift('Uncategorized');
+            localStorage.setItem('boxes_make_projects', JSON.stringify(projects));
+        }
+        return projects;
+    }
+    // Default projects
+    return ['Uncategorized'];
+}
+
+function saveMakeProjects(projects) {
+    // Always ensure "Uncategorized" is first
+    const filtered = projects.filter(p => p !== 'Uncategorized');
+    const final = ['Uncategorized', ...filtered];
+    localStorage.setItem('boxes_make_projects', JSON.stringify(final));
+}
+
+function addMakeProject(projectName) {
+    const projects = getMakeProjects();
+    const trimmed = projectName.trim();
+    if (trimmed && !projects.includes(trimmed)) {
+        projects.push(trimmed);
+        saveMakeProjects(projects);
+        return true;
+    }
+    return false;
+}
+
+function deleteMakeProject(projectName) {
+    if (projectName === 'Uncategorized') {
+        return false; // Cannot delete Uncategorized
+    }
+    const projects = getMakeProjects();
+    const filtered = projects.filter(p => p !== projectName);
+    saveMakeProjects(filtered);
+    
+    // Update any makes using this project to "Uncategorized"
+    const savedConfigs = loadSavedMakes();
+    let updated = false;
+    Object.values(savedConfigs).forEach(config => {
+        if (config.project === projectName) {
+            config.project = 'Uncategorized';
+            updated = true;
+        }
+    });
+    if (updated) {
+        localStorage.setItem('boxes_saved_configs', JSON.stringify(savedConfigs));
+    }
+    return true;
+}
+
 function loadSavedMakes() {
     // Get saved configurations from localStorage
     let savedConfigs = {};
@@ -674,37 +829,78 @@ function displaySavedMakes() {
     const configNames = Object.keys(savedConfigs);
     
     if (configNames.length === 0) {
-        container.innerHTML = '<p>No saved configurations yet. Visit a box generator page and click "Save to Local" to save your first configuration.</p>';
+        container.innerHTML = '<div class="card"><div class="card-body" style="text-align: center; padding: 60px 20px;"><p style="color: #999; font-size: 16px; margin: 0;">No saved configurations yet. Visit a box generator page and click "Save to Local" to save your first configuration.</p></div></div>';
         return;
     }
     
-    // Build the list of saved makes
-    let html = '<div class="makes-list">';
-    
-    configNames.forEach(name => {
-        const config = savedConfigs[name];
-        const date = new Date(config.timestamp);
-        const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-        
-        html += `
-            <div class="make-item" data-name="${escapeHtml(name)}">
-                <div class="make-info">
-                    <h3 class="make-name">${escapeHtml(name)}</h3>
-                    <p class="make-details">
-                        <span class="make-type">${escapeHtml(config.boxType)}</span>
-                        <span class="make-date">${formattedDate}</span>
-                    </p>
-                </div>
-                <div class="make-actions">
-                    <button class="primary" onclick="loadMake('${escapeHtml(name)}')">Load</button>
-                    <button class="secondary" onclick="renameMake('${escapeHtml(name)}')">Rename</button>
-                    <button class="danger" onclick="deleteMake('${escapeHtml(name)}')">Delete</button>
-                </div>
-            </div>
-        `;
+    // Get projects and initialize grouped object
+    const projects = getMakeProjects();
+    const grouped = {};
+    projects.forEach(proj => {
+        grouped[proj] = [];
     });
     
-    html += '</div>';
+    // Group makes by project
+    configNames.forEach(name => {
+        const config = savedConfigs[name];
+        const project = config.project || 'Uncategorized';
+        if (grouped[project]) {
+            grouped[project].push({ name, config });
+        } else {
+            grouped['Uncategorized'].push({ name, config });
+        }
+    });
+    
+    // Build HTML
+    let html = '';
+    
+    Object.keys(grouped).forEach(project => {
+        if (grouped[project].length > 0) {
+            const deleteBtn = project !== 'Uncategorized' ? 
+                `<button class="accent red small" onclick="confirmDeleteProject('${project}')" style="padding: 4px 8px; font-size: 12px;">Delete Project</button>` : '';
+            html += `<div style="margin-bottom: 40px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h4 style="font-size: 20px; font-weight: 600; margin: 0; color: #333;">${project}</h4>
+                    ${deleteBtn}
+                </div>
+                <div class="card-grid">`;
+            
+            grouped[project].forEach(({ name, config }) => {
+                const date = new Date(config.timestamp);
+                const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                
+                html += `
+                    <div class="card" data-name="${escapeHtml(name)}">
+                    <div class="card-header">
+                            <div class="card-header-title">${escapeHtml(name)}</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-meta">
+                                <div class="card-meta-item">
+                                    <span class="card-meta-label">Type:</span>
+                                    <span class="card-meta-value">${escapeHtml(config.boxType)}</span>
+                                </div>
+                                <div class="card-meta-item">
+                                    <span class="card-meta-label">Saved:</span>
+                                    <span class="card-meta-value">${formattedDate}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-actions">
+                                <button class="primary" onclick="loadMake('${escapeHtml(name)}')">Load</button>
+                                <button class="secondary" onclick="editMake('${escapeHtml(name)}')">Edit</button>
+                                <button class="accent red" onclick="deleteMake('${escapeHtml(name)}')">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div></div>';
+        }
+    });
+    
     container.innerHTML = html;
 }
 
@@ -725,6 +921,150 @@ function loadMake(name) {
     
     // Navigate to the saved URL
     window.location.href = config.url;
+}
+
+function editMake(name) {
+    // Store the name for later use
+    window.tempEditMakeName = name;
+    
+    const savedConfigs = loadSavedMakes();
+    const config = savedConfigs[name];
+    
+    if (!config) {
+        showNotification('Configuration not found!', 'error');
+        return;
+    }
+    
+    // Create or show edit modal
+    let editModal = document.getElementById('editMakeModal');
+    if (!editModal) {
+        editModal = document.createElement('div');
+        editModal.id = 'editMakeModal';
+        editModal.className = 'modal';
+        editModal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close-modal" onclick="closeModal('editMakeModal')">&times;</span>
+                    Edit Configuration
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editMakeName">Name:</label>
+                        <input type="text" id="editMakeName" class="form-control" placeholder="Enter name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editMakeProject">Project:</label>
+                        <select id="editMakeProject" class="form-control" onchange="handleProjectSelect(this)">
+                            <option value="Uncategorized">Uncategorized</option>
+                        </select>
+                        <small>Select a project or create a new one</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="accent lightgrey" onclick="closeModal('editMakeModal')">Cancel</button>
+                    <button type="button" class="primary" onclick="confirmEditMake()">Save Changes</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(editModal);
+    }
+    
+    // Populate project dropdown
+    populateProjectSelect();
+    
+    // Pre-fill the form
+    document.getElementById('editMakeName').value = name;
+    document.getElementById('editMakeProject').value = config.project || 'Uncategorized';
+    
+    openModal('editMakeModal');
+    
+    // Focus the input
+    setTimeout(() => {
+        document.getElementById('editMakeName').focus();
+    }, 100);
+}
+
+function populateProjectSelect() {
+    const select = document.getElementById('editMakeProject');
+    if (!select) return;
+    
+    const projects = getMakeProjects();
+    const currentValue = select.value;
+    
+    select.innerHTML = '';
+    projects.forEach(proj => {
+        const option = document.createElement('option');
+        option.value = proj;
+        option.textContent = proj;
+        select.appendChild(option);
+    });
+    
+    // Add "Add New Project..." option
+    const addOption = document.createElement('option');
+    addOption.value = '__ADD_NEW__';
+    addOption.textContent = '+ Add New Project...';
+    select.appendChild(addOption);
+    
+    // Restore previous value if it exists
+    if (currentValue && projects.includes(currentValue)) {
+        select.value = currentValue;
+    }
+}
+
+function handleProjectSelect(selectElement) {
+    if (selectElement.value === '__ADD_NEW__') {
+        const newProject = prompt('Enter new project name:');
+        if (newProject && newProject.trim()) {
+            if (addMakeProject(newProject.trim())) {
+                populateProjectSelect();
+                selectElement.value = newProject.trim();
+            } else {
+                showNotification('Project already exists or is invalid', 'error');
+                selectElement.value = 'Uncategorized';
+            }
+        } else {
+            selectElement.value = 'Uncategorized';
+        }
+    }
+}
+
+function confirmEditMake() {
+    const oldName = window.tempEditMakeName;
+    const newName = document.getElementById('editMakeName').value.trim();
+    const project = document.getElementById('editMakeProject').value;
+    
+    if (!newName || newName === '') {
+        showNotification('Please enter a valid name', 'error');
+        return;
+    }
+    
+    const savedConfigs = loadSavedMakes();
+    
+    // Check if renaming to a different name that already exists
+    if (newName !== oldName && savedConfigs[newName]) {
+        showNotification('A configuration with that name already exists!', 'error');
+        return;
+    }
+    
+    // Update the configuration
+    if (newName !== oldName) {
+        // Rename: copy to new name and delete old
+        savedConfigs[newName] = savedConfigs[oldName];
+        delete savedConfigs[oldName];
+    }
+    
+    // Update project
+    savedConfigs[newName].project = project;
+    
+    try {
+        localStorage.setItem('boxes_saved_configs', JSON.stringify(savedConfigs));
+        closeModal('editMakeModal');
+        displaySavedMakes();
+        showNotification('Configuration updated successfully!', 'success');
+    } catch (e) {
+        console.error('Error updating configuration:', e);
+        showNotification('Error updating configuration: ' + e.message, 'error');
+    }
 }
 
 function renameMake(oldName) {
@@ -748,7 +1088,7 @@ function renameMake(oldName) {
                     <input type="text" id="newMakeName" placeholder="Enter new name" />
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="tertiary" onclick="closeModal('renameModal')">Cancel</button>
+                    <button type="button" class="accent lightgrey" onclick="closeModal('renameModal')">Cancel</button>
                     <button type="button" class="primary" onclick="confirmRenameMake()">Rename</button>
                 </div>
             </div>
@@ -824,8 +1164,8 @@ function deleteMake(name) {
                     <p id="deleteMessage"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="tertiary" onclick="closeModal('deleteModal')">Cancel</button>
-                    <button type="button" class="danger" onclick="confirmDeleteMake()">Delete</button>
+                    <button type="button" class="accent lightgrey" onclick="closeModal('deleteModal')">Cancel</button>
+                    <button type="button" class="accent red" onclick="confirmDeleteMake()">Delete</button>
                 </div>
             </div>
         `;
@@ -853,12 +1193,119 @@ function confirmDeleteMake() {
     }
 }
 
+function confirmDeleteProject(projectName) {
+    window.tempDeleteProjectName = projectName;
+    
+    // Count makes in this project
+    const savedConfigs = loadSavedMakes();
+    const count = Object.values(savedConfigs).filter(c => c.project === projectName).length;
+    
+    let deleteModal = document.getElementById('deleteProjectModal');
+    if (!deleteModal) {
+        deleteModal = document.createElement('div');
+        deleteModal.id = 'deleteProjectModal';
+        deleteModal.className = 'modal';
+        deleteModal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close-modal" onclick="closeModal('deleteProjectModal')">&times;</span>
+                    Delete Project
+                </div>
+                <div class="modal-body">
+                    <p id="deleteProjectMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="accent lightgrey" onclick="closeModal('deleteProjectModal')">Cancel</button>
+                    <button type="button" class="accent red" onclick="executeDeleteProject()">Delete</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(deleteModal);
+    }
+    
+    const message = count > 0 
+        ? `Delete project "${projectName}"? ${count} configuration(s) will be moved to "Uncategorized".`
+        : `Delete project "${projectName}"?`;
+    
+    document.getElementById('deleteProjectMessage').textContent = message;
+    openModal('deleteProjectModal');
+}
+
+function executeDeleteProject() {
+    const projectName = window.tempDeleteProjectName;
+    
+    try {
+        deleteMakeProject(projectName);
+        closeModal('deleteProjectModal');
+        displaySavedMakes();
+        showNotification('Project deleted successfully!', 'success');
+    } catch (e) {
+        showNotification('Error deleting project: ' + e.message, 'error');
+    }
+}
+
 function initMakesPage() {
     console.log('Initializing Makes page');
     displaySavedMakes();
 }
 
 // ===== Materials Management Functions =====
+
+function getMaterialCategories() {
+    const stored = localStorage.getItem('boxes_material_categories');
+    if (stored) {
+        const categories = JSON.parse(stored);
+        // Always ensure "Uncategorized" exists
+        if (!categories.includes('Uncategorized')) {
+            categories.unshift('Uncategorized');
+            localStorage.setItem('boxes_material_categories', JSON.stringify(categories));
+        }
+        return categories;
+    }
+    // Default categories
+    return ['Uncategorized', 'Wood', 'Acrylic', 'Cardboard'];
+}
+
+function saveMaterialCategories(categories) {
+    // Always ensure "Uncategorized" is first
+    const filtered = categories.filter(c => c !== 'Uncategorized');
+    const final = ['Uncategorized', ...filtered];
+    localStorage.setItem('boxes_material_categories', JSON.stringify(final));
+}
+
+function addMaterialCategory(categoryName) {
+    const categories = getMaterialCategories();
+    const trimmed = categoryName.trim();
+    if (trimmed && !categories.includes(trimmed)) {
+        categories.push(trimmed);
+        saveMaterialCategories(categories);
+        return true;
+    }
+    return false;
+}
+
+function deleteMaterialCategory(categoryName) {
+    if (categoryName === 'Uncategorized') {
+        return false; // Cannot delete Uncategorized
+    }
+    const categories = getMaterialCategories();
+    const filtered = categories.filter(c => c !== categoryName);
+    saveMaterialCategories(filtered);
+    
+    // Update any materials using this category to "Uncategorized"
+    const materials = getMaterials();
+    let updated = false;
+    Object.values(materials).forEach(material => {
+        if (material.type === categoryName) {
+            material.type = 'Uncategorized';
+            updated = true;
+        }
+    });
+    if (updated) {
+        localStorage.setItem('boxes_materials', JSON.stringify(materials));
+    }
+    return true;
+}
 
 function getMaterials() {
     const stored = localStorage.getItem('boxes_materials');
@@ -876,6 +1323,8 @@ function saveMaterial(materialData) {
         thickness: parseFloat(materialData.thickness) || 0,
         burn: parseFloat(materialData.burn) || 0,
         spacing: materialData.spacing || '2',
+        inner_corner: materialData.inner_corner || 'loop',
+        tabs: parseFloat(materialData.tabs) || 0,
         createdAt: materialData.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString()
     };
@@ -928,20 +1377,20 @@ function displayMaterials() {
     
     if (!materialsContainer) return;
     
-    // Group materials by type
-    const grouped = {
-        'Wood': [],
-        'Acrylic': [],
-        'Cardboard': [],
-        'Other': []
-    };
+    // Get categories and initialize grouped object
+    const categories = getMaterialCategories();
+    const grouped = {};
+    categories.forEach(cat => {
+        grouped[cat] = [];
+    });
     
+    // Group materials by type
     Object.values(materials).forEach(material => {
-        const type = material.type || 'Other';
+        const type = material.type || 'Uncategorized';
         if (grouped[type]) {
             grouped[type].push(material);
         } else {
-            grouped['Other'].push(material);
+            grouped['Uncategorized'].push(material);
         }
     });
     
@@ -950,25 +1399,51 @@ function displayMaterials() {
     
     Object.keys(grouped).forEach(type => {
         if (grouped[type].length > 0) {
-            html += `<div class="material-group">
-                <h3>${type}</h3>
-                <div class="material-cards">`;
+            const deleteBtn = type !== 'Uncategorized' ? 
+                `<button class="accent red small" onclick="confirmDeleteCategory('${type}')" style="padding: 4px 8px; font-size: 12px;">Delete Category</button>` : '';
+            html += `<div style="margin-bottom: 40px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h4 style="font-size: 20px; font-weight: 600; margin: 0; color: #333;">${type}</h4>
+                    ${deleteBtn}
+                </div>
+                <div class="card-grid">`;
             
             grouped[type].forEach(material => {
                 html += `
-                    <div class="material-card">
-                        <div class="material-card-header">
-                            <h4>${material.name}</h4>
-                            <div class="material-card-actions">
-                                <button class="tertiary small" onclick="editMaterial('${material.id}')">Edit</button>
-                                <button class="danger small" onclick="confirmDeleteMaterial('${material.id}', '${material.name}')">Delete</button>
+                    <div class="card">
+                    <div class="card-header">
+                    <div class="card-header-title">${material.name}</div>
+                </div>
+                        <div class="card-body">
+                            <div class="card-meta">
+                                <div class="card-meta-item">
+                                    <span class="card-meta-label">Thickness:</span>
+                                    <span class="card-meta-value">${material.thickness} mm</span>
+                                </div>
+                                <div class="card-meta-item">
+                                    <span class="card-meta-label">Burn:</span>
+                                    <span class="card-meta-value">${material.burn} mm</span>
+                                </div>
+                                <div class="card-meta-item">
+                                    <span class="card-meta-label">Spacing:</span>
+                                    <span class="card-meta-value">${material.spacing}</span>
+                                </div>
+                                <div class="card-meta-item">
+                                    <span class="card-meta-label">Inner Corner:</span>
+                                    <span class="card-meta-value">${material.inner_corner || 'loop'}</span>
+                                </div>
+                                <div class="card-meta-item">
+                                    <span class="card-meta-label">Tabs:</span>
+                                    <span class="card-meta-value">${material.tabs || 0}</span>
+                                </div>
                             </div>
+                            ${material.notes ? `<div class="card-text" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0;"><strong>Notes:</strong><br>${material.notes}</div>` : ''}
                         </div>
-                        <div class="material-card-body">
-                            <div class="material-property"><strong>Thickness:</strong> ${material.thickness} mm</div>
-                            <div class="material-property"><strong>Burn:</strong> ${material.burn} mm</div>
-                            <div class="material-property"><strong>Spacing:</strong> ${material.spacing}</div>
-                            ${material.notes ? `<div class="material-notes"><strong>Notes:</strong> ${material.notes}</div>` : ''}
+                        <div class="card-footer">
+                            <div class="card-actions">
+                                <button class="accent grey" onclick="editMaterial('${material.id}')">Edit</button>
+                                <button class="accent red" onclick="confirmDeleteMaterial('${material.id}', '${material.name}')">Delete</button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -979,10 +1454,54 @@ function displayMaterials() {
     });
     
     if (html === '') {
-        html = '<p class="empty-state">No materials yet. Click "Add Material" to get started!</p>';
+        html = '<div class="card"><div class="card-body" style="text-align: center; padding: 60px 20px;"><p style="color: #999; font-size: 16px; margin: 0;">No materials yet. Click "Add Material" to get started!</p></div></div>';
     }
     
     materialsContainer.innerHTML = html;
+}
+
+function populateCategorySelect() {
+    const select = document.getElementById('materialType');
+    if (!select) return;
+    
+    const categories = getMaterialCategories();
+    const currentValue = select.value;
+    
+    select.innerHTML = '';
+    categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        select.appendChild(option);
+    });
+    
+    // Add "Add New Category..." option
+    const addOption = document.createElement('option');
+    addOption.value = '__ADD_NEW__';
+    addOption.textContent = '+ Add New Category...';
+    select.appendChild(addOption);
+    
+    // Restore previous value if it exists
+    if (currentValue && categories.includes(currentValue)) {
+        select.value = currentValue;
+    }
+}
+
+function handleCategorySelect(selectElement) {
+    if (selectElement.value === '__ADD_NEW__') {
+        const newCategory = prompt('Enter new category name:');
+        if (newCategory && newCategory.trim()) {
+            if (addMaterialCategory(newCategory.trim())) {
+                populateCategorySelect();
+                selectElement.value = newCategory.trim();
+            } else {
+                showNotification('Category already exists or is invalid', 'error');
+                selectElement.value = 'Uncategorized';
+            }
+        } else {
+            selectElement.value = 'Uncategorized';
+        }
+    }
 }
 
 function openMaterialModal(materialId = null) {
@@ -991,6 +1510,9 @@ function openMaterialModal(materialId = null) {
     const modalTitle = modal.querySelector('.modal-header');
     
     form.reset();
+    
+    // Populate category dropdown
+    populateCategorySelect();
     
     if (materialId) {
         // Edit mode
@@ -1006,6 +1528,8 @@ function openMaterialModal(materialId = null) {
             document.getElementById('materialThickness').value = material.thickness;
             document.getElementById('materialBurn').value = material.burn;
             document.getElementById('materialSpacing').value = material.spacing;
+            document.getElementById('materialInnerCorner').value = material.inner_corner || 'loop';
+            document.getElementById('materialTabs').value = material.tabs || 0;
         }
     } else {
         // Add mode
@@ -1030,7 +1554,9 @@ function saveMaterialForm() {
         notes: document.getElementById('materialNotes').value.trim(),
         thickness: document.getElementById('materialThickness').value,
         burn: document.getElementById('materialBurn').value,
-        spacing: document.getElementById('materialSpacing').value
+        spacing: document.getElementById('materialSpacing').value,
+        inner_corner: document.getElementById('materialInnerCorner').value,
+        tabs: document.getElementById('materialTabs').value
     };
     
     // Validation
@@ -1080,8 +1606,8 @@ function confirmDeleteMaterial(id, name) {
                     <p id="deleteMaterialMessage"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="tertiary" onclick="closeModal('deleteMaterialModal')">Cancel</button>
-                    <button type="button" class="danger" onclick="executeDeleteMaterial()">Delete</button>
+                    <button type="button" class="accent lightgrey" onclick="closeModal('deleteMaterialModal')">Cancel</button>
+                    <button type="button" class="accent red" onclick="executeDeleteMaterial()">Delete</button>
                 </div>
             </div>
         `;
@@ -1105,9 +1631,120 @@ function executeDeleteMaterial() {
     }
 }
 
+function confirmDeleteCategory(categoryName) {
+    window.tempDeleteCategoryName = categoryName;
+    
+    // Count materials in this category
+    const materials = getMaterials();
+    const count = Object.values(materials).filter(m => m.type === categoryName).length;
+    
+    let deleteModal = document.getElementById('deleteCategoryModal');
+    if (!deleteModal) {
+        deleteModal = document.createElement('div');
+        deleteModal.id = 'deleteCategoryModal';
+        deleteModal.className = 'modal';
+        deleteModal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close-modal" onclick="closeModal('deleteCategoryModal')">&times;</span>
+                    Delete Category
+                </div>
+                <div class="modal-body">
+                    <p id="deleteCategoryMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="accent lightgrey" onclick="closeModal('deleteCategoryModal')">Cancel</button>
+                    <button type="button" class="accent red" onclick="executeDeleteCategory()">Delete</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(deleteModal);
+    }
+    
+    const message = count > 0 
+        ? `Delete category "${categoryName}"? ${count} material(s) will be moved to "Uncategorized".`
+        : `Delete category "${categoryName}"?`;
+    
+    document.getElementById('deleteCategoryMessage').textContent = message;
+    openModal('deleteCategoryModal');
+}
+
+function executeDeleteCategory() {
+    const categoryName = window.tempDeleteCategoryName;
+    
+    try {
+        deleteMaterialCategory(categoryName);
+        closeModal('deleteCategoryModal');
+        displayMaterials();
+        showNotification('Category deleted successfully!', 'success');
+    } catch (e) {
+        showNotification('Error deleting category: ' + e.message, 'error');
+    }
+}
+
 function initMaterialsPage() {
     console.log('Initializing Materials page');
     displayMaterials();
+}
+
+// ===== Favorite Boxes Management =====
+
+// Get current box name from URL
+function getCurrentBoxName() {
+    const path = window.location.pathname;
+    const match = path.match(/\/([^\/]+)$/);
+    return match ? match[1] : null;
+}
+
+// Load favorite boxes from localStorage
+function loadFavorites() {
+    const stored = localStorage.getItem('boxes_favorite_boxes');
+    return stored ? JSON.parse(stored) : [];
+}   
+
+// Save favorite boxes to localStorage
+function saveFavorites(favorites) {
+    localStorage.setItem('boxes_favorite_boxes', JSON.stringify(favorites));
+}   
+
+function populateFavoriteButton() {
+    const favoriteBtn = document.getElementById('favorite-btn');
+    if (!favoriteBtn) return;
+    
+    const favorites = loadFavorites();
+    const boxName = getCurrentBoxName();
+    
+    if (!boxName) return;
+    
+    if (favorites.includes(boxName)) {
+        favoriteBtn.classList.add('active');
+    } else {
+        favoriteBtn.classList.remove('active');
+    }
+}
+
+
+// Toggle favorite status for a box
+function toggleFavorite(name) {
+    const favorites = loadFavorites();
+    const index = favorites.indexOf(name);
+    const favoriteBtn = document.getElementById('favorite-btn');
+    
+    if (index === -1) {
+        favorites.push(name);
+        saveFavorites(favorites);
+        if (favoriteBtn) {
+            favoriteBtn.classList.add('active');
+        }
+        showNotification(`Added "${name}" to favorites`, 'success');
+    } else {
+        favorites.splice(index, 1);
+        saveFavorites(favorites);
+        if (favoriteBtn) {
+            favoriteBtn.classList.remove('active');
+        }
+        showNotification(`Removed "${name}" from favorites`, 'success');
+    }
 }
 
 // ===== Material Selector for Box Generation =====
@@ -1242,6 +1879,8 @@ function applyMaterial() {
     const thicknessField = document.getElementById('thickness');
     const burnField = document.getElementById('burn');
     const spacingField = document.getElementById('spacing');
+    const innerCornerField = document.getElementById('inner_corner');
+    const tabsField = document.getElementById('tabs');
     
     if (thicknessField) {
         thicknessField.value = materialData.thickness;
@@ -1256,6 +1895,16 @@ function applyMaterial() {
     if (spacingField) {
         spacingField.value = materialData.spacing;
         spacingField.dispatchEvent(new Event('change'));
+    }
+    
+    if (innerCornerField) {
+        innerCornerField.value = materialData.inner_corner || 'loop';
+        innerCornerField.dispatchEvent(new Event('change'));
+    }
+    
+    if (tabsField) {
+        tabsField.value = materialData.tabs || 0;
+        tabsField.dispatchEvent(new Event('change'));
     }
     
     // Clear and hide dropdown
@@ -1273,5 +1922,282 @@ function applyMaterial() {
     // Refresh preview if it exists
     if (typeof refreshPreview === 'function') {
         refreshPreview();
+    }
+}
+
+// ===== Settings Page Functions =====
+
+// Get default settings from localStorage
+function getDefaults() {
+    const stored = localStorage.getItem('boxes_defaults');
+    if (stored) {
+        try {
+            return JSON.parse(stored);
+        } catch (e) {
+            console.error('Error parsing defaults:', e);
+        }
+    }
+    // Return default values
+    return {
+        format: 'svg',
+        reference: 100,
+        qr_code: false,
+        debug: false,
+        labels: false
+    };
+}
+
+// Save default settings to localStorage
+function saveDefaultsToStorage(defaults) {
+    localStorage.setItem('boxes_defaults', JSON.stringify(defaults));
+}
+
+// Open edit defaults modal and populate with current values
+function editDefaults() {
+    const defaults = getDefaults();
+    
+    // Populate form fields
+    document.getElementById('defaultFormat').value = defaults.format || 'svg';
+    document.getElementById('defaultReference').value = defaults.reference || 100;
+    document.getElementById('defaultQrCode').checked = defaults.qr_code || false;
+    document.getElementById('defaultDebug').checked = defaults.debug || false;
+    document.getElementById('defaultLabels').checked = defaults.labels || false;
+    
+    openModal('editDefaultsModal');
+}
+
+// Save defaults from form
+function saveDefaults() {
+    const defaults = {
+        format: document.getElementById('defaultFormat').value,
+        reference: parseFloat(document.getElementById('defaultReference').value) || 100,
+        qr_code: document.getElementById('defaultQrCode').checked,
+        debug: document.getElementById('defaultDebug').checked,
+        labels: document.getElementById('defaultLabels').checked
+    };
+    
+    try {
+        saveDefaultsToStorage(defaults);
+        showNotification('Defaults saved successfully!', 'success');
+        closeModal('editDefaultsModal');
+    } catch (e) {
+        showNotification('Error saving defaults: ' + e.message, 'error');
+    }
+}
+
+// Apply defaults to form fields on generator pages
+function applyDefaults() {
+    const defaults = getDefaults();
+    
+    // Only apply if URL doesn't have parameters (except language)
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasParams = Array.from(urlParams.keys()).some(key => key !== 'language');
+    
+    if (hasParams) {
+        // URL has parameters, don't override
+        return;
+    }
+    
+    // Apply format
+    const formatField = document.getElementById('format');
+    if (formatField && !formatField.value) {
+        formatField.value = defaults.format;
+    }
+    
+    // Apply reference
+    const referenceField = document.getElementById('reference');
+    if (referenceField && !referenceField.value) {
+        referenceField.value = defaults.reference;
+    }
+    
+    // Apply qr_code
+    const qrCodeField = document.getElementById('qr_code');
+    if (qrCodeField && qrCodeField.type === 'checkbox') {
+        qrCodeField.checked = defaults.qr_code;
+    }
+    
+    // Apply debug
+    const debugField = document.getElementById('debug');
+    if (debugField && debugField.type === 'checkbox') {
+        debugField.checked = defaults.debug;
+    }
+    
+    // Apply labels
+    const labelsField = document.getElementById('labels');
+    if (labelsField && labelsField.type === 'checkbox') {
+        labelsField.checked = defaults.labels;
+    }
+}
+
+// Toggle dark mode
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    localStorage.setItem('boxes_dark_mode', isDarkMode ? 'true' : 'false');
+}
+
+// Export user data to JSON file
+function exportUserData() {
+    const savedMakes = localStorage.getItem('boxes_saved_configs') || '{}';
+    const materials = localStorage.getItem('boxes_materials') || '{}';
+    const materialCategories = localStorage.getItem('boxes_material_categories') || '[]';
+    const makeProjects = localStorage.getItem('boxes_make_projects') || '[]';
+    const favoriteBoxes = localStorage.getItem('boxes_favorite_boxes') || '[]';
+    const darkMode = localStorage.getItem('boxes_dark_mode') || 'false';
+    const defaults = localStorage.getItem('boxes_defaults') || '{}';
+    
+    const data = {
+        savedMakes: JSON.parse(savedMakes),
+        materials: JSON.parse(materials),
+        materialCategories: JSON.parse(materialCategories),
+        makeProjects: JSON.parse(makeProjects),
+        favoriteBoxes: JSON.parse(favoriteBoxes),
+        darkMode: darkMode === 'true',
+        defaults: JSON.parse(defaults)
+    };  
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "boxes_user_data.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+// Trigger file input for import
+function triggerImportFile() {
+    const fileInput = document.getElementById('importFileInput');
+    if (fileInput) {
+        fileInput.click();
+    }
+}
+
+// Handle the imported file
+function handleImportFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!file.name.endsWith('.json')) {
+        showNotification('Please select a valid JSON file', 'error');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            let itemsImported = 0;
+
+            if (data.savedMakes) {
+                localStorage.setItem('boxes_saved_configs', JSON.stringify(data.savedMakes));
+                itemsImported++;
+            }
+            if (data.materials) {
+                localStorage.setItem('boxes_materials', JSON.stringify(data.materials));
+                itemsImported++;
+            }
+            if (data.materialCategories) {
+                localStorage.setItem('boxes_material_categories', JSON.stringify(data.materialCategories));
+                itemsImported++;
+            }
+            if (data.makeProjects) {
+                localStorage.setItem('boxes_make_projects', JSON.stringify(data.makeProjects));
+                itemsImported++;
+            }
+            if (data.favoriteBoxes) {
+                localStorage.setItem('boxes_favorite_boxes', JSON.stringify(data.favoriteBoxes));
+                itemsImported++;
+            }
+            if (typeof data.darkMode === 'boolean') {
+                localStorage.setItem('boxes_dark_mode', data.darkMode ? 'true' : 'false');
+                itemsImported++;
+            }
+            if (data.defaults) {
+                localStorage.setItem('boxes_defaults', JSON.stringify(data.defaults));
+                itemsImported++;
+            }
+            
+            if (itemsImported > 0) {
+                showNotification('User data imported successfully! Refresh the page to see changes.', 'success');
+                // Reset file input
+                event.target.value = '';
+            } else {
+                showNotification('No valid data found in the file', 'error');
+            }
+        } catch (error) {
+            console.error('Error importing user data:', error);
+            showNotification('Error importing data: Invalid JSON file', 'error');
+            event.target.value = '';
+        }
+    };
+    reader.readAsText(file);
+}
+
+// ===== Home Page - Favorite Generators Display =====
+
+function displayFavoriteGenerators() {
+    const favorites = loadFavorites();
+    const container = document.getElementById('favorites-container');
+    const noFavoritesMsg = document.getElementById('no-favorites');
+    
+    if (!container) return; // Not on home page
+    
+    if (favorites.length === 0) {
+        container.style.display = 'none';
+        noFavoritesMsg.style.display = 'block';
+        return;
+    }
+    
+    container.style.display = 'grid';
+    noFavoritesMsg.style.display = 'none';
+    
+    let html = '';
+    
+    favorites.forEach(name => {
+        const box = window.allBoxesData.find(b => b.name === name);
+        if (!box) return; // Skip if box not found
+        
+        const langParam = window.languageParam || '';
+        const staticUrl = window.staticUrl || 'static';
+        const thumbnailPath = box.thumbnail || `${staticUrl}/samples/${box.name}-thumb.jpg`;
+        const fallbackImg = `${staticUrl}/samples/no-image-thumb.jpg`;
+        
+        html += `
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-title">${escapeHtml(box.label)}</div>
+                    <button type="button" class="favorite active" onclick="toggleFavoriteOnHome('${escapeHtml(box.name)}')" title="Remove from favorites">★</button>
+                </div>
+                <div class="card-body">
+                    <div style="margin-bottom: 16px; text-align: center;">
+                        <img src="${thumbnailPath}" 
+                             onerror="this.onerror=null; this.src='${fallbackImg}';" 
+                             alt="${escapeHtml(box.label)}" 
+                             style="max-width: 200px; max-height: 200px; display: inline-block; border-radius: 4px;">
+                    </div>
+                    <p class="card-text">${escapeHtml(box.description)}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="./${box.name}${langParam}" class="primary" style="display: inline-block; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Create Box</a>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function toggleFavoriteOnHome(name) {
+    toggleFavorite(name);
+    // Refresh the display after toggle
+    setTimeout(() => {
+        displayFavoriteGenerators();
+    }, 100);
+}
+
+function initHomePage() {
+    console.log('Initializing Home page');
+    if (typeof window.allBoxesData !== 'undefined') {
+        displayFavoriteGenerators();
     }
 }

@@ -19,7 +19,9 @@ from boxes import *
 class StorageRack(Boxes):
     """StorageRack to store boxes and trays which have their own floor"""
 
-    ui_group = "Shelf"
+    ui_group = "Organisation"
+    tags = ["organisation", "rack", "storage"]
+    label = "Storage Rack"
 
     description = """
 

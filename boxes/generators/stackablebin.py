@@ -40,7 +40,12 @@ class StackableBinSideEdge(StackableBinEdge):
 class StackableBin(Boxes):
     """Stackable bin base on bintray"""
 
-    ui_group = "Shelf"
+    ui_group = "Organisation"
+    tags = ["organisation", "storage", "bin", "stackable"]
+    label = "Stackable Bin"
+    description = """A stackable bin based on the bintray design.
+The bin features finger joints and angled edges for stacking.
+"""
 
     def __init__(self) -> None:
         Boxes.__init__(self)

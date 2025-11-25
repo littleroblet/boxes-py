@@ -75,8 +75,13 @@ def offset_radius_in_square(squareside, angle, outset):
 class DiscRack(Boxes):
     """A rack for storing disk-shaped objects vertically next to each other"""
 
-    ui_group = "Shelf"
-
+    ui_group = "Organisation"
+    tags = ["organisation", "rack", "storage"]
+    label = "Disc Rack"
+    description = """A rack to store disk-shaped objects like Pot Lids, Plates vertically next to each other. The discs are held
+in place by slits cut into angled walls. The angle and position of the slits can be
+adjusted to fit different disc diameters and thicknesses.
+"""
     def __init__(self) -> None:
         Boxes.__init__(self)
 

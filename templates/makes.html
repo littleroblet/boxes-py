@@ -5,12 +5,21 @@
 {% block body_attrs %} onload="initMakesPage()"{% endblock %}
 
 {% block content %}
-<div style="max-width: 1200px; margin: 0 auto;">
-    <h2>Saved Makes</h2>
-    <p>Your locally saved box configurations are stored in your browser's localStorage.</p>
-
-    <div id="saved-makes-container">
-        <p>Loading...</p>
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <div style="margin-bottom: 30px;">
+        <h2 style="margin-bottom: 8px;">Saved Makes</h2>
+        <p style="margin-bottom: 0; color: #666;">Your locally saved box configurations are stored in your browser's
+            localStorage.</p>
     </div>
+
+    <div id="saved-makes-container" class="card-list">
+        <div class="card">
+            <div class="card-body">
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+
+</div>
 </div>
 {% endblock %}

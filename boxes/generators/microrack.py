@@ -20,7 +20,9 @@ class SBCMicroRack(Boxes):
     """Stackable rackable racks for SBC Pi-Style Computers"""
 
     webinterface = True
-    ui_group = "Shelf"  # see ./__init__.py for names
+    ui_group = "Rack"  
+    tags = ["rack"]
+    label = "SBC Micro Rack"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

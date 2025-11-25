@@ -19,7 +19,9 @@ from boxes import *
 class BasedBox(Boxes):
     """Fully closed box on a base"""
 
-    ui_group = "Box"
+    ui_group = "Basic"
+    tags = ["simple"]
+    label = "Based Box"
 
     description = """This box is more of a building block than a finished item.
 Use a vector graphics program (like Inkscape) to add holes or adjust the base

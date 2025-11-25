@@ -32,7 +32,10 @@ pieces or as a single piece that continues at the back.
 ![Half open](static/samples/CompartmentBox-lid.jpg)
 """
 
-    ui_group = "Tray"
+    ui_group = "Organisation"
+
+    tags = ["organisation", "tray"]
+    label = "Compartment Box"
 
     def __init__(self) -> None:
         Boxes.__init__(self) # avoid TypeTray.__init__

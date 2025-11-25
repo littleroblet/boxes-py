@@ -20,6 +20,10 @@ class BirdHouse(Boxes):
     """Simple Bird House"""
 
     ui_group = "Misc"
+    tags = ["birdhouse", "bird", "house"]
+    label = "Bird House"
+    description = """A simple bird house with slanted roof and entrance hole.
+    """
 
     def __init__(self) -> None:
         Boxes.__init__(self)

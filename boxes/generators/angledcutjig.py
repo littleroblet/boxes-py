@@ -20,6 +20,8 @@ class AngledCutJig(Boxes): # Change class name!
     """Jig for making angled cuts in a laser cutter"""
 
     ui_group = "Misc"
+    tags = ["jig", "angled"]
+    label = "Angled Cut Jig"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

@@ -22,8 +22,10 @@ class Silverware(Boxes):
     using flex for rounded corners
     """
 
-    ui_group = "Unstable"
+    ui_group = "Organisation"
     ui_flag = "experimental"
+    tags = ["organisation", "silverware", "box"]
+    label = "Silverware Box"
 
 
     def __init__(self) -> None:

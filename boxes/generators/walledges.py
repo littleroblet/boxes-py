@@ -18,6 +18,10 @@ from boxes.walledges import _WallMountedBox
 
 class WallEdges(_WallMountedBox):
     """Shows the different edge types for wall systems"""
+    ui_group = "Testing"
+    tags = ["edge", "wall", "part"]
+    label = "Wall Edges"
+    ui_flag = "Beta"
 
     def __init__(self) -> None:
         super().__init__()

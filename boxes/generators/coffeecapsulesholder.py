@@ -23,7 +23,9 @@ class CoffeeCapsuleHolder(Boxes):
     Coffee capsule holder
     """
 
-    ui_group = "Misc"
+    ui_group = "Organisation"
+    tags = ["organisation", "coffee"]
+    label = "Coffee Capsule Holder"
 
     description = """
 You can store your coffee capsule near your espresso machine with this. It works both vertically, or upside down under a shelf.

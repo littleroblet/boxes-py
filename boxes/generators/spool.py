@@ -19,7 +19,9 @@ from boxes import *
 class Spool(Boxes):
     """A simple spool"""
 
-    ui_group = "Misc"
+    ui_group = "Organisation"
+    tags = ["spool", "reel", "cable holder"]
+    label = "Spool"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

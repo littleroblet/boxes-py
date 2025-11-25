@@ -6,7 +6,10 @@ from boxes import Boxes
 class Rack19HalfWidth(Boxes):
     """Half width 19inch rack unit for musical equipment."""
 
-    ui_group = "Box"
+    ui_group = "Rack"
+    tags = ["rack"]
+    label = "19\" Halfwidth Rack Box"
+    ui_flag = "Beta"
 
     def __init__(self) -> None:
         super().__init__()

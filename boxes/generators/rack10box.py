@@ -19,7 +19,9 @@ from boxes.generators.rack19box import Rack19Box
 class Rack10Box(Rack19Box):
     """Closed box with screw on top for mounting in a 10" rack."""
 
-    ui_group = "Box"
+    ui_group = "Rack"
+    tags = ["rack"]
+    label = "10\" Rack Box"
     ui_flag = "Beta"
 
     def render(self):

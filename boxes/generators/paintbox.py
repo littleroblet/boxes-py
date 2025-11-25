@@ -20,8 +20,14 @@ class PaintStorage(Boxes):
     """Stackable storage for hobby paint or other things"""
 
     webinterface = True
-    ui_group = "Shelf"  # see ./__init__.py for names
-
+    ui_group = "Organisation"  
+    tags = ["organisation", "storage", "paint", "drawer"]
+    label = "Paint Storage"
+    description = """A stackable storage box for hobby paint bottles or similar items.
+Holes are placed in a grid or hexagonal pattern to hold the paint bottles in place.
+Optionally additional top and bottom plates with holes can be added to better
+secure the bottles. A drawer variant is also available.
+"""
     canheight: int
     candiameter: int
     minspace: int

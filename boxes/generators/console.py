@@ -20,6 +20,8 @@ class Console(Boxes):
     """Console with slanted panel"""
 
     ui_group = "Electronics"
+    tags = ["console", "arcade"]
+    label = "Console with slanted panel"
 
     description = """
 

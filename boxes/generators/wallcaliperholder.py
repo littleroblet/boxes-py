@@ -18,7 +18,7 @@ from boxes.walledges import _WallMountedBox
 
 class WallCaliper(_WallMountedBox):
     """Holds a single caliper to a wall"""
-    ui_group = "Rail"
+    ui_group = "WallSystem"
     tags = ["caliper", "holder", "part", "rail"]
     label = "Wall Caliper Holder"
 

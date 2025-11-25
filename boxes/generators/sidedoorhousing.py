@@ -20,7 +20,9 @@ from boxes.generators.console2 import Console2
 class SideDoorHousing(Console2):
     """Box with service hatches on either one or both of the sides that are locked with latches"""
 
-    ui_group = "Box"
+    ui_group = "Special"
+    tags = ["service hatch", "latches", "lided"]
+    label = "Side Door Housing"
 
     description = """
 This box is designed as a housing for electronic projects but could be used for other purposes. It has hatches that can be re-opened with simple tools. If built from thin enough material, it intentionally cannot be opened with bare hands.

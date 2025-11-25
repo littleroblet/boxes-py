@@ -19,7 +19,9 @@ from boxes import *
 class DisplayShelf(Boxes):
     """Shelf with slanted floors"""
 
-    ui_group = "Shelf"
+    ui_group = "Display"
+    tags = ["shelf", "display", "organizer"]
+    label = "Display Shelf" 
 
     # arguments/properties
     num: int

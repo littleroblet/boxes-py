@@ -18,6 +18,9 @@ from boxes.walledges import _WallMountedBox
 
 class WallHopper(_WallMountedBox):
     """Storage hopper with dispensing tray"""
+    ui_group = "WallSystem"
+    tags = ["hopper", "dispenser", "part", "wall"]
+    label = "Wall Hopper"
 
     description = '''
 ####Assembly Notes:

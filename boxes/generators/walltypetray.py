@@ -20,6 +20,9 @@ from boxes.walledges import _WallMountedBox
 
 class WallTypeTray(_WallMountedBox, _TopEdge):
     """Type tray - allows only continuous walls"""
+    ui_group = "WallSystem"
+    tags = ["tray", "type", "part", "wall"]
+    label = "Wall Type Tray"
 
     def __init__(self) -> None:
         super().__init__()

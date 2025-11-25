@@ -35,7 +35,13 @@ class FrontEdge(edges.Edge):
 class SpicesRack(Boxes):
     """Rack for cans of spices"""
 
-    ui_group = "Shelf"
+    ui_group = "Organisation"
+    tags = ["organisation", "storage", "spices", "rack"]
+    label = "Spices Rack"
+    description = """A rack to store cans of spices in an organized manner.
+The rack supports the cans and can optionally include feet for stability.
+Supports can be placed in holes to hold the cans securely.
+"""
 
     def __init__(self) -> None:
         Boxes.__init__(self)

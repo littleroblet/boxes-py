@@ -19,7 +19,12 @@ from boxes import *
 class WineRack(Boxes):
     """Honey Comb Style Wine Rack"""
 
-    ui_group = "Shelf"
+    ui_group = "Organisation"
+    tags = ["organisation", "storage", "wine", "rack"]
+    label = "Wine Rack"
+    description = """A round hole style wine rack designed to hold wine bottles securely.
+The rack features finger joints and customizable walls for different configurations.
+"""
 
     def __init__(self) -> None:
         Boxes.__init__(self)

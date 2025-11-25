@@ -26,7 +26,9 @@ hinges are assembled.
 Assemble the box and the lid separately. Then insert the axle into the hinges.
 Then attach the hinges on the inside of the box and then connect them to lid.
 """
-    ui_group = "Box"
+    ui_group = "Special"
+    tags = ["hinge", "lided"]
+    label = "Hinge Box"
 
     def __init__(self) -> None:
         Boxes.__init__(self)

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Boxes.py{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+    <div class="jumbotron">
+        <h1 class="jumbotron-title">Welcome to Boxes.py</h1>
+        <p class="jumbotron-subtitle">Create boxes and more with a laser cutter!</p>
+    </div>
+
+    <div class="feature-grid">
+        <div class="feature-box">
+            <h2>Getting Started</h2>
+            <p>Explore hundreds of parametric box designs ready to customize and cut on your laser cutter.</p>
+            <a href="./Gallery{% if language %}?language={{ language }}{% endif %}">Browse Templates →</a>
+        </div>
+
+        <div class="feature-box">
+            <h2>Your Projects</h2>
+            <p>Save and manage your box configurations for quick access and reuse.</p>
+            <a href="./Makes{% if language %}?language={{ language }}{% endif %}">View Makes →</a>
+        </div>
+
+        <div class="feature-box">
+            <h2>Material Library</h2>
+            <p>Create a library of your materials with thickness, burn, and spacing settings.</p>
+            <a href="./Materials{% if language %}?language={{ language }}{% endif %}">Manage Materials →</a>
+        </div>
+    </div>
+
+    <!-- Favorite Generators Section -->
+    <div style="margin-top: 60px; margin-bottom: 60px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0;">Your Favorite Generators</h2>
+            <a href="./Gallery{% if language %}?language={{ language }}{% endif %}" style="color: #4CAF50; text-decoration: none; font-weight: 600;">View All →</a>
+        </div>
+        <div id="favorites-container" class="card-grid">
+            <!-- JavaScript will populate this with favorites -->
+        </div>
+        <div id="no-favorites" style="display: none; text-align: center; padding: 60px 20px; color: #999;">
+            <p style="font-size: 16px; margin: 0;">No favorite generators yet. Click the star ★ on any generator page to add it to your favorites!</p>
+        </div>
+    </div>
+
+    <div class="jumbotron">
+        <h2>About Boxes.py</h2>
+        <div class="jumbotron-content">
+            <p>
+                Boxes.py is an Open Source box generator written in Python. It features both finished parametrized 
+                generators as well as a Python API for writing your own. It features finger and (flat) dovetail joints, 
+                flex cuts, holes and slots for screws, hinges, gears, pulleys and much more.
+            </p>
+        </div>
+        <div class="jumbotron-actions">
+            <a href="https://florianfesti.github.io/boxes/html/index.html" target="_blank" rel="noopener" class="jumbotron-link">
+                Documentation
+            </a>
+            <a href="https://github.com/florianfesti/boxes" target="_blank" rel="noopener" class="jumbotron-link secondary">
+                View on GitHub
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Store all boxes data from server - passed from Python/Jinja2
+window.allBoxesData = {{ boxes|tojson|safe }};
+window.languageParam = '{% if language %}?language={{ language }}{% endif %}';
+window.staticUrl = '{{ static_url }}';
+</script>
+{% endblock %}

@@ -31,7 +31,7 @@ pressure_units = { 'Pa' : 1.0,
 class OrganPipe(Boxes): # Change class name!
     """Rectangular organ pipe based on pipecalc"""
 
-    ui_group = "Unstable" # see ./__init__.py for names
+    ui_group = "Part" 
     ui_flag = "Experimental"
 
     def getFrequency(self, pitch, octave, base_freq=440):
