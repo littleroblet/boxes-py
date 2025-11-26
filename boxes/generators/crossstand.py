@@ -14,54 +14,192 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from boxes import *
+from math import *
 
 
-class CrossStand(Boxes): # Change class name!
-    """A cross shaped stand for various purposes"""
+class CrossStand(Boxes):
+    """A cross shaped stand for books, tablets, or displays"""
 
     ui_group = "Display" 
-    ui_flag = ["Experimental", "New"]
-    tags = ["stand", "cross"]
+    ui_flag = ["New"]
+    tags = ["stand", "cross", "book", "tablet", "display"]
     label = "Cross Stand"
-    description = "A cross shaped stand for various purposes"
-    created_date = "2025-11-27"
-    release_notes = """Initial release"""
+    description = """An elegant X-shaped stand perfect for books, tablets, cookbooks, or displays. 
+    Features adjustable angle, customizable support width, and decorative cutouts. The two pieces 
+    interlock at the center for easy assembly and disassembly."""
 
     def __init__(self) -> None:
         Boxes.__init__(self)
 
-        # Uncomment the settings for the edge types you use
-        # use keyword args to set default values
-        # self.addSettingsArgs(edges.FingerJointSettings, finger=1.0,space=1.0)
-        # self.addSettingsArgs(edges.DoveTailSettings)
-        # self.addSettingsArgs(edges.StackableSettings)
-        # self.addSettingsArgs(edges.HingeSettings)
-        # self.addSettingsArgs(edges.SlideOnLidSettings)
-        # self.addSettingsArgs(edges.ClickSettings)
-        # self.addSettingsArgs(edges.FlexSettings)
-        # self.addSettingsArgs(edges.HandleEdgeSettings)
-        # self.addSettingsArgs(edges.RoundedTriangleEdgeSettings)
-        # self.addSettingsArgs(edges.MountingSettings)
-
-        # remove cli params you do not need
-        self.buildArgParser(x=100, sx="3*50", y=100, sy="3*50", h=100, hi=0)
-        # Add non default cli params if needed (see argparse std lib)
         self.argparser.add_argument(
-            "--XX",  action="store", type=float, default=0.5,
-            help="DESCRIPTION")
-
+            "--depth",
+            action="store",
+            type=float,
+            default=200.0,
+            help="depth of the stand (mm)",
+        )
+        self.argparser.add_argument(
+            "--top_lip",
+            action="store",
+            type=float,
+            default=10.0,
+            help="height of top lip to hold item (mm)",
+        )
+        self.argparser.add_argument(
+            "--angle",
+            action="store",
+            type=float,
+            default=60.0,
+            help="viewing angle of the stand (degrees from horizontal)",
+        )
+        self.argparser.add_argument(
+            "--support_height",
+            action="store",
+            type=float,
+            default=15.0,
+            help="height of the bottom support edge (mm)",
+        )
+        self.argparser.add_argument(
+            "--nub_size",
+            action="store",
+            type=float,
+            default=10.0,
+            help="size of the end nub (mm)",
+        )
 
     def render(self):
-        # adjust to the variables you want in the local scope
-        x, y, h = self.x, self.y, self.h
-        t = self.thickness
+        calcs = self.perform_calculations()
 
-        # Create new Edges here if needed E.g.:
-        s = edges.FingerJointSettings(self.thickness, relative=False,
-                                      space = 10, finger=10,
-                                      width=self.thickness)
-        p = edges.FingerJointEdge(self, s)
-        p.char = "a" # 'a', 'A', 'b' and 'B' is reserved for being used within generators
-        self.addPart(p)
+        self.stand_triangles(calcs, move="up")
 
-        # render your parts here
+    def perform_calculations(self):
+        # a
+        angle_rads_a = math.radians(self.angle)
+
+        # h
+        height = self.depth * math.sin(angle_rads_a)
+
+        # y
+        base = sqrt(2) * self.depth * math.cos(angle_rads_a)
+
+        # z
+        hyp = self.depth * sqrt(math.pow(math.cos(angle_rads_a), 2) + 1)
+
+        # b
+        angle_rads_b = math.atan(math.tan(angle_rads_a) / math.sqrt(2))
+
+        # g
+        base_extra = (
+            1
+            / math.cos(angle_rads_b)
+            * (self.nub_size - self.support_height * math.sin(angle_rads_b))
+        )
+
+        # x
+        lip_outer = (
+            self.support_height / math.cos(angle_rads_b)
+            + self.top_lip
+            - self.nub_size * math.tan(angle_rads_b)
+        )
+
+        bottom_slot_depth = (height / 4) + (self.support_height / 2)
+
+        top_slot_depth_big = (
+            height / 4 + self.support_height / 2 + (self.thickness * height) / (2 * base)
+        )
+
+        top_slot_depth_small = (
+            height / 4 + self.support_height / 2 - (self.thickness * height) / (2 * base)
+        )
+
+        half_hyp = (hyp * (base - self.thickness)) / (2 * base)
+
+        return dict(
+            height=height,
+            base=base,
+            hyp=hyp,
+            angle=math.degrees(angle_rads_b),
+            base_extra=base_extra,
+            lip_outer=lip_outer,
+            bottom_slot_depth=bottom_slot_depth,
+            top_slot_depth_small=top_slot_depth_small,
+            top_slot_depth_big=top_slot_depth_big,
+            half_hyp=half_hyp,
+        )
+
+    def stand_triangles(self, calcs, move=None):
+        tw = calcs["base"] + self.spacing + 2 * (calcs["base_extra"] + math.sin(math.radians(calcs["angle"]))*(calcs["lip_outer"]+1))
+        th = calcs["height"] + 2 * self.support_height + self.spacing
+
+        if self.move(tw, th, move, True):
+            return
+        self.moveTo(calcs["base_extra"]+self.spacing + math.sin(math.radians(calcs["angle"]))*(calcs["lip_outer"]+1))
+        self.draw_triangle(calcs, top=False)
+        self.moveTo(calcs["base"] - self.spacing,
+                    th, 180)
+        self.draw_triangle(calcs, top=True)
+
+        self.move(tw, th, move)
+
+    @restore
+    def draw_triangle(self, calcs, top):
+        # Rear end
+        self.moveTo(0, calcs["height"] + self.support_height, -90)
+
+        self.edge(calcs["height"] + self.support_height)
+        self.corner(90)
+
+        foot_length = 10 + self.nub_size
+
+        base_length_without_feet = (
+            calcs["base"] - foot_length * 2 - 7 # -7 to account for extra width gained by 45deg angles
+        )
+
+        if top:
+            # Bottom without slot
+            self.polyline(
+                foot_length, 45,
+                5, -45,
+                base_length_without_feet, -45,
+                5, 45,
+                foot_length + calcs["base_extra"], 0,
+            )
+        else:
+            # Bottom with slot
+            self.polyline(
+                foot_length, 45,
+                5, -45,
+                (base_length_without_feet - self.thickness) / 2, 90,
+                calcs["bottom_slot_depth"] - 3.5, -90,
+                self.thickness, -90,
+                calcs["bottom_slot_depth"] - 3.5, 90,
+                (base_length_without_feet - self.thickness) / 2, -45,
+                5, 45,
+                foot_length  + calcs["base_extra"], 0,
+            )
+
+        # End nub
+        self.corner(90 - calcs["angle"])
+        self.edge(calcs["lip_outer"])
+        self.corner(90, 1)
+        self.edge(self.nub_size - 2)
+        self.corner(90, 1)
+        self.edge(self.top_lip)
+        self.corner(-90)
+
+        if top:
+            # Top with slot
+            self.edge(calcs["half_hyp"])
+            self.corner(90 + calcs["angle"])
+            self.edge(calcs["top_slot_depth_small"])
+            self.corner(-90)
+            self.edge(self.thickness)
+            self.corner(-90)
+            self.edge(calcs["top_slot_depth_big"])
+            self.corner(90 - calcs["angle"])
+            self.edge(calcs["half_hyp"])
+        else:
+            # Top without slot
+            self.edge(calcs["hyp"])
+
+        self.corner(90 + calcs["angle"])
