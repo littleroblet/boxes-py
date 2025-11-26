@@ -333,11 +333,13 @@ class Boxes:
         short_description: str = ""
         if self.__doc__:
             short_description = inspect.cleandoc(self.__doc__)
+        # Support ui_group as either string or list - use first group for metadata
+        ui_group_str = self.ui_group[0] if isinstance(self.ui_group, list) else self.ui_group
         self.metadata = {
             "name": self.__class__.__name__,
             "short_description": short_description,
             "description": self.description,
-            "group": self.ui_group,
+            "group": ui_group_str,
             "url": "",
             "url_short": "",
             "cli": "",

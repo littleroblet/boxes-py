@@ -19,6 +19,14 @@ from boxes.walledges import _WallMountedBox
 class WallXXX(_WallMountedBox): # Change class name!
     """DESCRIPTION"""
 
+    ui_group = "Misc" # see ./__init__.py for names
+    description = """EXPLAIN WHAT YOUR GENERATOR DOES"""
+    created_date = "2025-11-27" # will allow sorted by newest
+    release_notes = """Initial release""" # optional allows for changelog if you add new features. 
+    ui_flag = "Experimental"  # Experimental, Deprecated, Beta, Updated
+    tags = ["Tag1", "Tag2"]  # Tags for searching
+    label = "A nice name"
+
     def __init__(self) -> None:
         super().__init__()
 

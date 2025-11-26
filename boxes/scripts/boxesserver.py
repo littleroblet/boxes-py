@@ -129,8 +129,11 @@ class BServer:
 
         for name, box in self.boxes.items():
             box.UI = "web"
-            self.groups_by_name.get(box.ui_group,
-                                    self.groups_by_name["Misc"]).add(box)
+            # Support ui_group as either string or list
+            ui_groups = box.ui_group if isinstance(box.ui_group, list) else [box.ui_group]
+            for group_name in ui_groups:
+                self.groups_by_name.get(group_name,
+                                        self.groups_by_name["Misc"]).add(box)
 
         if os.path.isabs(static_path):
             self.staticdir = static_path
@@ -488,16 +491,25 @@ window.generatorTemplates = {json.dumps(getattr(box, 'templates', []))};
                 if box.__doc__:
                     docs = " - " + _(box.__doc__)
                 
-                # Get the ui_flag if it exists
+                # Get the ui_flag if it exists - support both string and list
                 ui_flag = getattr(box, 'ui_flag', None)
                 flag_pill = ''
                 if ui_flag:
-                    flag_class = 'other'
-                    if ui_flag.lower() == 'experimental':
-                        flag_class = 'experimental'
-                    elif ui_flag.lower() == 'beta':
-                        flag_class = 'beta'
-                    flag_pill = f' <span class="pill-badge {flag_class}">{html.escape(ui_flag)}</span>'
+                    ui_flags = ui_flag if isinstance(ui_flag, list) else [ui_flag]
+                    for flag in ui_flags:
+                        flag_class = 'other'
+                        flag_lower = flag.lower()
+                        if flag_lower == 'experimental':
+                            flag_class = 'experimental'
+                        elif flag_lower == 'beta':
+                            flag_class = 'beta'
+                        elif flag_lower == 'new':
+                            flag_class = 'new'
+                        elif flag_lower == 'updated':
+                            flag_class = 'updated'
+                        elif flag_lower == 'deprecated':
+                            flag_class = 'deprecated'
+                        flag_pill += f' <span class="pill-badge {flag_class}">{html.escape(flag)}</span>'
                 
                 # Get tags for filtering
                 box_tags = getattr(box, 'tags', [])
@@ -767,16 +779,25 @@ window.generatorTemplates = {json.dumps(getattr(box, 'templates', []))};
                 href = f"{name}{langparam}"
                 fallback_img = f"{self.static_url}/samples/no-image-thumb.jpg"
                 
-                # Get the ui_flag if it exists
+                # Get the ui_flag if it exists - support both string and list
                 ui_flag = getattr(box, 'ui_flag', None)
                 flag_pill = ''
                 if ui_flag:
-                    flag_class = 'other'
-                    if ui_flag.lower() == 'experimental':
-                        flag_class = 'experimental'
-                    elif ui_flag.lower() == 'beta':
-                        flag_class = 'beta'
-                    flag_pill = f'<span class="pill-badge {flag_class}">{html.escape(ui_flag)}</span>'
+                    ui_flags = ui_flag if isinstance(ui_flag, list) else [ui_flag]
+                    for flag in ui_flags:
+                        flag_class = 'other'
+                        flag_lower = flag.lower()
+                        if flag_lower == 'experimental':
+                            flag_class = 'experimental'
+                        elif flag_lower == 'beta':
+                            flag_class = 'beta'
+                        elif flag_lower == 'new':
+                            flag_class = 'new'
+                        elif flag_lower == 'updated':
+                            flag_class = 'updated'
+                        elif flag_lower == 'deprecated':
+                            flag_class = 'deprecated'
+                        flag_pill += f' <span class="pill-badge {flag_class}">{html.escape(flag)}</span>'
                 
                 # Get tags for filtering
                 box_tags = getattr(box, 'tags', [])

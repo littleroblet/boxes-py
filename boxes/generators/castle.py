@@ -16,6 +16,17 @@
 from boxes import *
 
 
+class GateEdgeSettings(edges.Settings):
+    """Settings for Gate Edge"""
+    
+    absolute_params = {}
+    relative_params = {}
+    
+    def edgeObjects(self, boxes, chars: str = "g", add: bool = True):
+        edges_list = [GateBottomEdge(boxes, self)]
+        return self._edgeObjects(edges_list, boxes, chars, add)
+
+
 class GateBottomEdge(edges.BaseEdge):
     """Bottom edge with arch gate cutout"""
     char = 'g'
@@ -25,24 +36,26 @@ class GateBottomEdge(edges.BaseEdge):
         gatewidth = self.boxes.gatewidth
         gateheight = self.boxes.gateheight
         
+        # Calculate dimensions for arch
         radius = gatewidth / 2
         straight_height = gateheight - radius
         
-        # Calculate side lengths
+        # Calculate side lengths (remaining bottom edge after gate opening)
         side_length = (length - gatewidth) / 2
         
-        # Draw left side of bottom edge
+        # Draw the bottom edge with arch cutout going INTO the wall
+        # Left portion of bottom edge
         self.edge(side_length)
         
-        # Draw the gate arch cutout (going up, around, and back down)
-        self.corner(90)               # turn up
-        self.edge(straight_height)    # go up left side
-        self.corner(90, radius)       # arc top-left quarter
-        self.corner(90, radius)       # arc top-right quarter  
-        self.edge(straight_height)    # go down right side
-        self.corner(90)               # turn back to horizontal
+        # Gate opening - corners with negative radius cut INWARD
+        self.corner(90)    # vertical cut up into wall (negative = inward)
+        self.edge(straight_height)
+        self.corner(-90, radius)            # semicircular arch at top (negative = inward)
+        self.corner(-90, radius)            # semicircular arch at top (negative = inward)
+        self.edge(straight_height)
+        self.corner(90)    # vertical cut down (negative = inward)
         
-        # Draw right side of bottom edge
+        # Right portion of bottom edge
         self.edge(side_length)
 
 
@@ -53,7 +66,7 @@ class Castle(Boxes):
 to be connected together using finger joints. The layout of the castle can be customized
 using a simple text-based format."""
     ui_group = "Display"
-    ui_flag = "Experimental"
+    ui_flag = ["Experimental", "Updated"]
     tags = ["castle", "tower"]
     label = "Castle tower display"
 
@@ -128,6 +141,8 @@ using a simple text-based format."""
                     "towerlength": 60.0,
                     "wallheight": 80.0,
                     "walllength": 120.0,
+                    "gatewidth": 80.0,
+                    "gateheight": 60.0,
                     "castleindent": 8.0
                 }
             },
@@ -140,6 +155,8 @@ using a simple text-based format."""
                     "towerlength": 70.0,
                     "wallheight": 120.0,
                     "walllength": 200.0,
+                    "gatewidth": 80.0,
+                    "gateheight": 60.0,
                     "castleindent": 10.0
                 }
             },
@@ -152,6 +169,8 @@ using a simple text-based format."""
                     "towerlength": 50.0,
                     "wallheight": 100.0,
                     "walllength": 150.0,
+                    "gatewidth": 80.0,
+                    "gateheight": 60.0,
                     "castleindent": 8.0
                 }
             },
@@ -170,15 +189,31 @@ using a simple text-based format."""
                 }
             },
             {
-                "name": "Corner Fort",
-                "description": "L-shaped corner fortification with two towers",
+                "name": "Corner Fort with Gate",
+                "description": "L-shaped fortress with gate entrance",
                 "args": {
-                    "layout": "#-#\n  |",
+                    "layout": "#^#\n  >  \n  #  ",
                     "towerheight": 180.0,
                     "towerlength": 65.0,
                     "wallheight": 90.0,
                     "walllength": 100.0,
+                    "gatewidth": 60.0,
+                    "gateheight": 50.0,
                     "castleindent": 9.0
+                }
+            },
+            {
+                "name": "Walled Castle with Entry",
+                "description": "Complete castle with front and side gates",
+                "args": {
+                    "layout": "#-#-#\n>   ^\n#-#-#",
+                    "towerheight": 220.0,
+                    "towerlength": 55.0,
+                    "wallheight": 110.0,
+                    "walllength": 120.0,
+                    "gatewidth": 70.0,
+                    "gateheight": 55.0,
+                    "castleindent": 8.0
                 }
             }
         ]
@@ -299,7 +334,8 @@ using a simple text-based format."""
         s.edgeObjects(self, "pPQ")
         
         # Register the gate edge
-        self.addPart(GateBottomEdge(self, None))
+        g = GateEdgeSettings(self.thickness)
+        g.edgeObjects(self, "g")
 
         grid, rows = self.parse_layout(self.layout)
         towers, h_walls, v_walls, gate_walls = self.analyze_layout(grid)

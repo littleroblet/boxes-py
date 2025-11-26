@@ -16,16 +16,16 @@
 from boxes import *
 
 
-class BOX(Boxes): # Change class name!
-    """DESCRIPTION"""
+class CrossStand(Boxes): # Change class name!
+    """A cross shaped stand for various purposes"""
 
-    ui_group = "Misc" # see ./__init__.py for names
-    description = """EXPLAIN WHAT YOUR GENERATOR DOES"""
-    created_date = "2025-11-27" # will allow sorted by newest
-    release_notes = """Initial release""" # optional allows for changelog if you add new features. 
-    ui_flag = "Experimental"  # Experimental, Deprecated, Beta, Updated
-    tags = ["Tag1", "Tag2"]  # Tags for searching
-    label = "A nice name"
+    ui_group = "Display" 
+    ui_flag = ["Experimental", "New"]
+    tags = ["stand", "cross"]
+    label = "Cross Stand"
+    description = "A cross shaped stand for various purposes"
+    created_date = "2025-11-27"
+    release_notes = """Initial release"""
 
     def __init__(self) -> None:
         Boxes.__init__(self)

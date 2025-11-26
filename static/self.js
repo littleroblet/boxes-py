@@ -2348,6 +2348,9 @@ function createGridDesigner(textarea, config) {
             }
         }
     }
+    
+    // Expose syncGridFromTextarea so it can be called externally (e.g., from templates)
+    textarea.syncGridFromTextarea = syncGridFromTextarea;
 }
 
 function parseLayoutToGrid(layoutStr, rows, cols, elements) {
@@ -2453,9 +2456,13 @@ function loadTemplate(template) {
         
         if (input.tagName === 'TEXTAREA') {
             input.value = value;
-            // Trigger grid designer sync if it exists
+            // Trigger change event
             const event = new Event('change', { bubbles: true });
             input.dispatchEvent(event);
+            // If this textarea has a grid designer, sync it
+            if (input.syncGridFromTextarea) {
+                input.syncGridFromTextarea();
+            }
         } else if (input.type === 'checkbox') {
             input.checked = value;
         } else if (input.type === 'number' || input.type === 'text') {

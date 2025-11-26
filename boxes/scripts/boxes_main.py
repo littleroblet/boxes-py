@@ -100,8 +100,11 @@ def group_generators(generators):
     groups_by_name = boxes.generators.ui_groups_by_name
 
     for name, generator in generators.items():
-        group_for_generator = groups_by_name.get(generator.ui_group, groups_by_name['Misc'])
-        group_for_generator.add(generator)
+        # Support ui_group as either string or list
+        ui_groups = generator.ui_group if isinstance(generator.ui_group, list) else [generator.ui_group]
+        for group_name in ui_groups:
+            group_for_generator = groups_by_name.get(group_name, groups_by_name['Misc'])
+            group_for_generator.add(generator)
 
     return groups
 

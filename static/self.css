@@ -717,6 +717,18 @@ button.favorite.active {
     background-color: #2196F3;
 }
 
+.pill-badge.new {
+    background-color: #4CAF50;
+}
+
+.pill-badge.updated {
+    background-color: #FF9800;
+}
+
+.pill-badge.deprecated {
+    background-color: #f44336;
+}
+
 .pill-badge.other {
     background-color: #999999;
 }
